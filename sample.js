@@ -12,6 +12,15 @@ var BUTTON_HEIGHT       = 50,
     BUTTON_CUBE_ID      = '#cube',
     BUTTON_DICE_ID      = '#dice';
 
+var CONTROL_FORWARD     = 'w',
+    CONTROL_LEFT        = 'a',
+    CONTROL_RIGHT       = 'd',
+    CONTROL_BACK        = 's',
+    CONTROL_MOVE_SPEED  = 2,
+    CONTROL_LOOK_SPEED  = 2,
+    CONTROL_UNLOCK_LOOK = false,
+    CONTROL_NO_FLY      = true;
+
 var LIGHT_COLOR         = 0xffffff, // white
     LIGHT_BRIGHTNESS    = 1,
     LIGHT_INITIAL_X     = 0,
@@ -98,6 +107,17 @@ var createCube = function() {
     return new THREE.Mesh(geometry, material);
 };
 
+var createCameraControls = function() {
+    return new CameraControls();
+};
+
+var createKeyboard = function() {
+    return new THREEx.KeyboardState();
+};
+
+var createClock = function() {
+    return new THREE.Clock();
+};
 
 /* * * * * * * * * *
  * Rendering Logic *
@@ -121,6 +141,7 @@ var draw = function() {
             return;
         }
         diceSample ? TWEEN.update() : rotateCube();
+        controls.update(camera, keyboard, clock);
         renderer.render(scene, camera);
         draw();
     });
@@ -163,9 +184,12 @@ var rollDie = function() {
  * * * * * * * * * * * */
 var light       = createLight(),
     camera      = createCamera(),
-    scene       = createScene(light, camera),
+    scene       = createScene(),
     renderer    = createRenderer(),
-    cube        = createCube();
+    cube        = createCube(),
+    controls    = createCameraControls(),
+    keyboard    = createKeyboard(),
+    clock       = createClock();
 
 var diceSample = false;
 
@@ -209,6 +233,20 @@ var switchToCubeSample = function() {
         diceSample = false;
         document.removeEventListener('click', rollDie);
         resetScene();
+    }
+};
+
+var handleKeyPress = function(keyEvent) {
+    var key = String.fromCharCode(keyEvent.charCode);
+
+    if (key === CONTROL_FORWARD) {
+        camera.position.z -= MOVE_SPEED;
+    } else if (key === CONTROL_LEFT) {
+        camera.position.x -= MOVE_SPEED;
+    } else if (key === CONTROL_RIGHT) {
+        camera.position.x += MOVE_SPEED;
+    } else if (key === CONTROL_BACK) {
+        camera.position.z += MOVE_SPEED;
     }
 };
 
