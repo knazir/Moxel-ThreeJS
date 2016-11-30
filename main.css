@@ -6,6 +6,10 @@ canvas {
 	display: block;
 }
 
+#container {
+	margin: 0;
+}
+
 #controls {
 	text-align: center;
 }
@@ -37,7 +41,7 @@ canvas {
 	text-shadow:0px 1px 0px #ffffff;
 	margin-right: 30px;
 	margin-left: 30px;
-	margin-bottom: 20px;
+	margin-bottom: 50px;
 }
 .myButton:hover {
 	background:-webkit-gradient(linear, left top, left bottom, color-stop(0.05, #dfdfdf), color-stop(1, #ededed));

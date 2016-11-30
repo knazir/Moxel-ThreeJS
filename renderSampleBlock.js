@@ -8,7 +8,7 @@ var degreesToRadians = function(degrees) {
 /* * * * * * *
  * Constants *
  * * * * * * */
-var BUTTON_HEIGHT       = 10,
+var BUTTON_HEIGHT       = 50,
     BUTTON_CUBE_ID      = '#cube',
     BUTTON_DICE_ID      = '#dice';
 
