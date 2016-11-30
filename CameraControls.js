@@ -10,18 +10,18 @@ CameraControls.prototype.update = function(camera, keyboard, clock) {
         rotateAngle     = Math.PI / 2 * delta;
 
     // Forwards and backwards movement
-    if (keyboard.pressed('w')) {
+    if (keyboard.pressed('w') || keyboard.pressed('up')) {
         camera.translateZ(-moveDistance);
     }
-    if (keyboard.pressed('s')) {
+    if (keyboard.pressed('s') || keyboard.pressed('down')) {
         camera.translateZ(moveDistance);
     }
 
     // Rotating left or right
-    if (keyboard.pressed('a')) {
+    if (keyboard.pressed('a') || keyboard.pressed('left')) {
         camera.rotateOnAxis(new THREE.Vector3(0, 1, 0), rotateAngle);
     }
-    if (keyboard.pressed('d')) {
+    if (keyboard.pressed('d') || keyboard.pressed('right')) {
         camera.rotateOnAxis(new THREE.Vector3(0, 1, 0), -rotateAngle);
     }
 };

@@ -12,14 +12,7 @@ var BUTTON_HEIGHT       = 50,
     BUTTON_CUBE_ID      = '#cube',
     BUTTON_DICE_ID      = '#dice';
 
-var CONTROL_FORWARD     = 'w',
-    CONTROL_LEFT        = 'a',
-    CONTROL_RIGHT       = 'd',
-    CONTROL_BACK        = 's',
-    CONTROL_MOVE_SPEED  = 2,
-    CONTROL_LOOK_SPEED  = 2,
-    CONTROL_UNLOCK_LOOK = false,
-    CONTROL_NO_FLY      = true;
+var CONTROL_MOVE_SPEED  = 2;
 
 var LIGHT_COLOR         = 0xffffff, // white
     LIGHT_BRIGHTNESS    = 1,
@@ -236,21 +229,20 @@ var switchToCubeSample = function() {
     }
 };
 
-var handleKeyPress = function(keyEvent) {
-    var key = String.fromCharCode(keyEvent.charCode);
-
-    if (key === CONTROL_FORWARD) {
-        camera.position.z -= MOVE_SPEED;
-    } else if (key === CONTROL_LEFT) {
-        camera.position.x -= MOVE_SPEED;
-    } else if (key === CONTROL_RIGHT) {
-        camera.position.x += MOVE_SPEED;
-    } else if (key === CONTROL_BACK) {
-        camera.position.z += MOVE_SPEED;
+var disableKeyScrolling = function(keyEvent) {
+    console.log('sup');
+    switch(keyEvent.keyCode) {
+        case 37: case 39: case 38:  case 40: // Arrow keys
+        case 32: // Space
+            keyEvent.preventDefault();
+            break;
+        default:
+            break;
     }
 };
 
 var setupControls = function() {
+    window.addEventListener('keydown', disableKeyScrolling, false);
     document.querySelector(BUTTON_CUBE_ID).onclick = switchToCubeSample;
     document.querySelector(BUTTON_DICE_ID).onclick = switchToDiceSample;
 };
