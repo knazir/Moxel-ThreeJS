@@ -44,7 +44,7 @@ var ANIMATION_MILLIS    = 200,
 var DICE_FACE_POSITIONS = {
     1: { x: 0, y: degreesToRadians(270), z: 0 },
     2: { x: 0, y: degreesToRadians(90),  z: 0 },
-    3: { x: 0, y: degreesToRadians(90),  z: 0 },
+    3: { x: degreesToRadians(90), y: 0,  z: 0 },
     4: { x: degreesToRadians(270), y: 0, z: 0 },
     5: { x: 0, y: 0, z: 0 },
     6: { x: degreesToRadians(180), y: 0, z: 0 }
