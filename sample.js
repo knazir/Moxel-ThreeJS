@@ -18,7 +18,8 @@ var LIGHT_COLOR         = 0xffffff, // white
     LIGHT_BRIGHTNESS    = 1,
     LIGHT_INITIAL_X     = 0,
     LIGHT_INITIAL_Y     = 0,
-    LIGHT_INITIAL_Z     = 50;
+    LIGHT_INITIAL_Z     = 50,
+    LIGHT_FOLLOW_CAMERA = true;
 
 var CAMERA_FOV          = 35,
     CAMERA_ASPECT_RATIO = window.innerWidth / window.innerHeight,
@@ -120,15 +121,23 @@ var rotateCube = function() {
     cube.rotation.z += degreesToRadians(CUBE_ROTATION_DZ);
 };
 
+var animate = function() {
+    diceSample ? TWEEN.update() : rotateCube();
+    controls.update();
+    if (LIGHT_FOLLOW_CAMERA) {
+        light.position.set(camera.position.x, camera.position.y, camera.position.z);
+        light.rotation.set(camera.rotation.x, camera.rotation.y, camera.rotation.z);
+    }
+    renderer.render(scene, camera);
+};
+
 var draw = function() {
     var initialSample = diceSample;
     window.requestAnimationFrame(function() {
         if (initialSample != diceSample) {
             return;
         }
-        diceSample ? TWEEN.update() : rotateCube();
-        controls.update();
-        renderer.render(scene, camera);
+        animate();
         draw();
     });
 };
@@ -172,9 +181,8 @@ var light       = createLight(),
     camera      = createCamera(),
     scene       = createScene(),
     renderer    = createRenderer(),
-    cube        = createCube();
-
-var controls;
+    cube        = createCube(),
+    controls    = createCameraControls();
 
 var diceSample = false;
 
@@ -188,6 +196,8 @@ var resetElements = function() {
     scene       = createScene(light, camera);
     renderer    = createRenderer();
     cube        = createCube();
+    controls    = createCameraControls();
+
 };
 
 var setBackground = function() {
@@ -233,7 +243,6 @@ var disableKeyScrolling = function(keyEvent) {
 };
 
 var setupControls = function() {
-    controls = createCameraControls();
     window.addEventListener('keydown', disableKeyScrolling, false);
     document.querySelector(BUTTON_CUBE_ID).onclick = switchToCubeSample;
     document.querySelector(BUTTON_DICE_ID).onclick = switchToDiceSample;
