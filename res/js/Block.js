@@ -33,7 +33,7 @@ function BlockFactory() {
     };
 
     this.createCubeModel = function(x, y, z, type) {
-        var geometry    = new THREE.BoxGeometry(CONFIG.CUBE_SIZE, CONFIG.CUBE_SIZE, CONFIG.CUBE_SIZE),
+        var geometry    = new THREE.BoxBufferGeometry(CONFIG.CUBE_SIZE, CONFIG.CUBE_SIZE, CONFIG.CUBE_SIZE),
             material    = this.createCubeMaterial(type),
             cube        = new THREE.Mesh(geometry, material);
         cube.position.set(x, y, z);
@@ -87,8 +87,8 @@ function TextureFactory() {
         for (var i = 0; i < BLOCK_FACE_ASSIGNMENTS.BODY.length; i++) {
             cubeMaterials[BLOCK_FACE_ASSIGNMENTS.BODY[i]] = this.createMaterialFromTexture(bodyTexture);
         }
-        cubeMaterials[BLOCK_FACE_ASSIGNMENTS.TOP] = this.createMaterialFromTexture(topTexture);
-        cubeMaterials[BLOCK_FACE_ASSIGNMENTS.BOTTOM] = this.createMaterialFromTexture(bottomTexture);
+        cubeMaterials[BLOCK_FACE_ASSIGNMENTS.TOP]       = this.createMaterialFromTexture(topTexture);
+        cubeMaterials[BLOCK_FACE_ASSIGNMENTS.BOTTOM]    = this.createMaterialFromTexture(bottomTexture);
 
         this.cachedTextures[cubeMeta.NAME] = cubeMaterials;
         return cubeMaterials;
@@ -107,12 +107,12 @@ function TextureFactory() {
             backTexture     = this.textureLoader.load(CONFIG.BLOCK_TEXTURE_DIR + cubeMeta.BACK),
             cubeMaterials   = new Array(6);
 
-        cubeMaterials[BLOCK_FACE_ASSIGNMENTS.TOP] = this.createMaterialFromTexture(topTexture);
-        cubeMaterials[BLOCK_FACE_ASSIGNMENTS.BOTTOM] = this.createMaterialFromTexture(bottomTexture);
-        cubeMaterials[BLOCK_FACE_ASSIGNMENTS.LEFT] = this.createMaterialFromTexture(leftTexture);
-        cubeMaterials[BLOCK_FACE_ASSIGNMENTS.RIGHT] = this.createMaterialFromTexture(rightTexture);
-        cubeMaterials[BLOCK_FACE_ASSIGNMENTS.FRONT] = this.createMaterialFromTexture(frontTexture);
-        cubeMaterials[BLOCK_FACE_ASSIGNMENTS.BACK] = this.createMaterialFromTexture(backTexture);
+        cubeMaterials[BLOCK_FACE_ASSIGNMENTS.TOP]       = this.createMaterialFromTexture(topTexture);
+        cubeMaterials[BLOCK_FACE_ASSIGNMENTS.BOTTOM]    = this.createMaterialFromTexture(bottomTexture);
+        cubeMaterials[BLOCK_FACE_ASSIGNMENTS.LEFT]      = this.createMaterialFromTexture(leftTexture);
+        cubeMaterials[BLOCK_FACE_ASSIGNMENTS.RIGHT]     = this.createMaterialFromTexture(rightTexture);
+        cubeMaterials[BLOCK_FACE_ASSIGNMENTS.FRONT]     = this.createMaterialFromTexture(frontTexture);
+        cubeMaterials[BLOCK_FACE_ASSIGNMENTS.BACK]      = this.createMaterialFromTexture(backTexture);
 
         this.cachedTextures[cubeMeta.NAME] = cubeMaterials;
         return cubeMaterials;

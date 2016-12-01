@@ -40,9 +40,10 @@ function createWorld() {
     };
 
     var createSkybox = function() {
-        var skyGeometry     = new THREE.SphereGeometry(CONFIG.SKYBOX_SIZE, CONFIG.SKYBOX_WIDTH,CONFIG.SKYBOX_HEIGHT),
-            textureLoader   = new THREE.TextureLoader(),
-            texture         = textureLoader.load(CONFIG.BLOCK_TEXTURE_DIR + BLOCK_TYPES[BLOCK_TYPES.SKYBOX].SPHERE),
+        var skyGeometry     = new THREE.SphereBufferGeometry(CONFIG.SKYBOX_SIZE, CONFIG.SKYBOX_WIDTH,
+                                                             CONFIG.SKYBOX_HEIGHT),
+            textureFilename = CONFIG.BLOCK_TEXTURE_DIR + BLOCK_TYPES[BLOCK_TYPES.SKYBOX].SPHERE,
+            texture         = new THREE.TextureLoader().load(textureFilename),
             skyMaterial     = new THREE.MeshBasicMaterial({map: texture, side: THREE.DoubleSide}),
             skyBox          = new THREE.Mesh(skyGeometry, skyMaterial);
 
@@ -128,7 +129,7 @@ function createWorld() {
 
     var renderSample = function () {
         noise.seed(Math.random());
-        skyBox = createSkybox();
+        var skyBox = createSkybox();
         addComponentsToScene(scene, light, camera, skyBox);
 
         setBackground();
