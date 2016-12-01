@@ -1,6 +1,6 @@
-/* * * * * * * * * * * * *
- * Methods for Constants *
- * * * * * * * * * * * * */
+/* * * * * * * * * * *
+ * Utility Functions *
+ * * * * * * * * * * */
 var degreesToRadians = function(degrees) {
     return degrees * (Math.PI / 180);
 };
@@ -52,9 +52,9 @@ var DICE_FACE_POSITIONS = {
     6: { x: degreesToRadians(180), y: 0, z: 0 }
 };
 
-/* * * * * * * * * * *
- * Component Methods *
- * * * * * * * * * * */
+/* * * * * * * * * * * *
+ * Component Functions *
+ * * * * * * * * * * * */
 var createScene = function() {
     return new THREE.Scene();
 };
@@ -101,16 +101,9 @@ var createCube = function() {
 };
 
 var createCameraControls = function() {
-    return new CameraControls();
+    return new CameraControls(camera, new THREEx.KeyboardState(), new THREE.Clock());
 };
 
-var createKeyboard = function() {
-    return new THREEx.KeyboardState();
-};
-
-var createClock = function() {
-    return new THREE.Clock();
-};
 
 /* * * * * * * * * *
  * Rendering Logic *
@@ -134,7 +127,7 @@ var draw = function() {
             return;
         }
         diceSample ? TWEEN.update() : rotateCube();
-        controls.update(camera, keyboard, clock);
+        controls.update();
         renderer.render(scene, camera);
         draw();
     });
@@ -179,10 +172,9 @@ var light       = createLight(),
     camera      = createCamera(),
     scene       = createScene(),
     renderer    = createRenderer(),
-    cube        = createCube(),
-    controls    = createCameraControls(),
-    keyboard    = createKeyboard(),
-    clock       = createClock();
+    cube        = createCube();
+
+var controls;
 
 var diceSample = false;
 
@@ -230,7 +222,6 @@ var switchToCubeSample = function() {
 };
 
 var disableKeyScrolling = function(keyEvent) {
-    console.log('sup');
     switch(keyEvent.keyCode) {
         case 37: case 39: case 38:  case 40: // Arrow keys
         case 32: // Space
@@ -242,6 +233,7 @@ var disableKeyScrolling = function(keyEvent) {
 };
 
 var setupControls = function() {
+    controls = createCameraControls();
     window.addEventListener('keydown', disableKeyScrolling, false);
     document.querySelector(BUTTON_CUBE_ID).onclick = switchToCubeSample;
     document.querySelector(BUTTON_DICE_ID).onclick = switchToDiceSample;
