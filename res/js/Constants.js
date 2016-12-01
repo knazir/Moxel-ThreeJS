@@ -1,5 +1,5 @@
 CONFIG = Object.freeze({
-    CUBE_SIZE:              1,
+    CUBE_SIZE:              10,
     ORIGIN:                 {X: 0, Y: 0, Z: 0},
     BLOCK_TEXTURE_DIR:      'res/textures/blocks/',
 
@@ -18,9 +18,9 @@ CONFIG = Object.freeze({
     CAMERA_ASPECT_RATIO:    window.innerWidth / window.innerHeight,
     CAMERA_NEAR_PLANE:      1,
     CAMERA_FAR_PLANE:       1000,
-    CAMERA_INITIAL_X:       0,
-    CAMERA_INITIAL_Y:       0,
-    CAMERA_INITIAL_Z:       100,
+    CAMERA_INITIAL_X:       45,
+    CAMERA_INITIAL_Y:       20,
+    CAMERA_INITIAL_Z:       220,
     CAMERA_MOVE_SPEED:      2,
 
     RENDERER_WIDTH:         window.innerWidth,

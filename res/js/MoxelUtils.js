@@ -20,6 +20,21 @@ var inBounds = function(x, y, z, width, height, length) {
 };
 
 var shouldRender = function(blocks, x, y, z) {
-    // TODO: Implement this.
-    return true;
+    var width   = blocks.length,
+        height  = blocks[0].length,
+        length  = blocks[0][0].length;
+
+    for (var i = x - 1; i <= x + 1; i++) {
+        for (var j = y - 1; j <= y + 1; j++) {
+            for (var k = z - 1; k <= z + 1; k++) {
+                var cubeInBounds = inBounds(i, j, k, width, height, length);
+                if (cubeInBounds && BLOCK_TYPES[blocks[i][j][k].getType()]['NAME'] === 'AIR') {
+                    return true;
+                } else if (!cubeInBounds) {
+                    return true;
+                }
+            }
+        }
+    }
+    return false;
 };
