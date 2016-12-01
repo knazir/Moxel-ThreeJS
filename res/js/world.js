@@ -30,13 +30,22 @@ function createWorld() {
     };
 
     var createChunk = function() {
-        var chunk = new Chunk(CONFIG.CHUNK_WIDTH, CONFIG.CHUNK_HEIGHT, CONFIG.CHUNK_LENGTH);
+        var chunk = new Chunk(scene, CONFIG.CHUNK_WIDTH, CONFIG.CHUNK_HEIGHT, CONFIG.CHUNK_LENGTH);
         chunk.generateBlocks();
         return chunk;
     };
 
     var createCameraControls = function () {
         return new CameraControls(camera, new THREEx.KeyboardState(), new THREE.Clock());
+    };
+
+    var createSkybox = function() {
+        var textureFactory  = new TextureFactory(),
+            geometry        = new THREE.BoxGeometry(CONFIG.SKYBOX_SIZE, CONFIG.SKYBOX_SIZE, CONFIG.SKYBOX_SIZE),
+            material        = textureFactory.createTextureMaterials(BLOCK_TYPES.SKYBOX),
+            skybox          = new THREE.Mesh(geometry, material);
+        skybox.position.set(CONFIG.CAMERA_INITIAL_X, CONFIG.CAMERA_INITIAL_Y, CONFIG.CAMERA_INITIAL_Z);
+        return skybox;
     };
 
 
@@ -85,7 +94,7 @@ function createWorld() {
     };
 
     var setBackground = function () {
-        document.body.style.backgroundColor = CONFIG.COLOR_SKY;
+        document.body.style.backgroundColor = CONFIG.SKYBOX_COLOR;
     };
 
     var resetScene = function () {
@@ -115,7 +124,20 @@ function createWorld() {
 
     var renderSample = function () {
         noise.seed(Math.random());
-        addComponentsToScene(scene, light, camera);
+        skybox = createSkybox();
+        addComponentsToScene(scene, light, camera, skybox);
+
+        // var skyGeometry = new THREE.SphereGeometry(5000,50,50);
+        // var texture;
+        // texture = THREE.ImageUtils.loadTexture('res/textures/blocks/grass_top.png');
+
+        // var skyMaterial = new THREE.MeshBasicMaterial({map: texture, side: THREE.DoubleSide });
+        // _skyBox = new THREE.Mesh( skyGeometry, skyMaterial );
+        // _skyBox.material.fog = false;
+        // _skyBox.position.set(0,0,0);
+        // _skyBox.rotation.x = Math.PI/4;
+        // scene.add( _skyBox );
+
         setBackground();
         chunk.addBlocksToScene(scene);
         renderer.render(scene, camera);

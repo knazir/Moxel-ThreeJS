@@ -28,7 +28,8 @@ CONFIG = Object.freeze({
     RENDERER_CANVAS_ID:     '#container',
     RENDERER_ALPHA:         true,
 
-    COLOR_SKY:              '#87CEFA',
+    SKYBOX_SIZE:            250,
+    SKYBOX_COLOR:           '#87CEFA',
 
     NOISE_OCTAVES:          5,
     NOISE_AMPLITUDE:        1.0,
@@ -43,29 +44,45 @@ BLOCK_TYPES = Object.freeze({
     STONE:  2,
     SAND:   3,
     GRASS:  4,
+    SKYBOX: 99,
 
     // Code -> Meta
     0:  {
-            NAME: 'AIR',    TYPE: 'simple',
+            NAME: 'AIR',
+            TYPE: 'simple',
             TEXTURE: null
         },
     1:  {
-            NAME: 'DIRT',   TYPE: 'simple',
+            NAME: 'DIRT',
+            TYPE: 'simple',
             TEXTURE: 'dirt.png'
         },
     2:  {
-            NAME: 'STONE',  TYPE: 'simple',
+            NAME: 'STONE',
+            TYPE: 'simple',
             TEXTURE: 'gravel_stone.png'
         },
     3:  {
-            NAME: 'SAND',   TYPE: 'simple',
+            NAME: 'SAND',
+            TYPE: 'simple',
             TEXTURE: 'sand.png'
         },
     4:  {
-            NAME: 'GRASS',  TYPE: 'topped',
-            BODY_TEXTURE: 'dirt_grass.png',     TOP_TEXTURE: 'grass_top.png',   BOTTOM_TEXTURE: 'dirt.png'
+            NAME: 'GRASS',
+            TYPE: 'topped',
+            BODY_TEXTURE: 'dirt_grass.png', TOP: 'grass_top.png',   BOTTOM: 'dirt.png'
+        },
+    99: {
+            NAME:   'SKYBOX',
+            TYPE:   'custom',
+            TOP:    'skybox_top.png',       BOTTOM: 'skybox_bottom.png',        LEFT: 'skybox_side.png',
+            RIGHT:  'skybox_sideHills.png', FRONT:  'skybox_sideClouds.png',    BACK: 'skybox_side.png'
         }
 });
+
+STATIC_BLOCKS = {
+    AIR: new Block(0, null)
+};
 
 BLOCK_FACE_ASSIGNMENTS = {
     LEFT:   0,
@@ -74,6 +91,5 @@ BLOCK_FACE_ASSIGNMENTS = {
     BOTTOM: 3,
     FRONT:  4,
     BACK:   5,
-
     BODY: [0, 1, 4, 5]
 };
