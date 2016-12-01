@@ -8,7 +8,7 @@ CameraControls.prototype.constructor = CameraControls;
 
 CameraControls.prototype.update = function() {
     var delta           = this.clock.getDelta(),
-        moveDistance    = CONTROL_MOVE_SPEED,
+        moveDistance    = CONFIG.CAMERA_MOVE_SPEED,
         rotateAngle     = Math.PI / 2 * delta;
 
     // Forwards and backwards movement

@@ -2,23 +2,22 @@
 <html lang="en"> 
 	<head>
 		<meta http-equiv="content-type" content="text/html; charset=utf-8"> 
-		<title>3D Rendering with ThreeJS</title>
+		<title>Voxel World Generation with ThreeJS</title>
 
 		<link rel="stylesheet" type="text/css" href="res/css/main.css">
 	</head> 
 
 	<body>
-		<!--TODO: Add overlay explaining movement controls-->
 		<div id="container"></div>
-		<div id="buttons">
-			<a class="myButton" id="cube">Cube Rendering</a>
-			<a class="myButton" id="dice">Roll the Die</a>
-		</div>
 		<script type="text/javascript" src="res/js/lib/three.min.js"></script>
 		<script type="text/javascript" src='res/js/lib/threex.keyboardstate.js'></script>
 		<script type="text/javascript" src="res/js/lib/Tween.js"></script>
+
+        <script type="text/javascript" src="res/js/MoxelUtils.js"></script>
 		<script type="text/javascript" src="res/js/Constants.js"></script>
 		<script type="text/javascript" src="res/js/CameraControls.js"></script>
-		<script type="text/javascript" src="res/js/sample.js"></script>
+		<script type="text/javascript" src="res/js/Block.js"></script>
+		<script type="text/javascript" src="res/js/Chunk.js"></script>
+		<script type="text/javascript" src="res/js/world.js"></script>
 	</body>
 </html>
