@@ -27,19 +27,27 @@ CameraControls.prototype.update = function() {
         this.camera.translateX(moveDistance);
     }
 
+    // Moving up and down
+    if (this.keyboard.pressed('t')) {
+        this.camera.translateY(moveDistance)
+    }
+    if (this.keyboard.pressed('g')) {
+        this.camera.translateY(-moveDistance);
+    }
+
+    // Rotating up or down
+    if (this.keyboard.pressed('r')) {
+        this.camera.rotateOnAxis(new THREE.Vector3(1, 0, 0), rotateAngle);
+    }
+    if (this.keyboard.pressed('f')) {
+        this.camera.rotateOnAxis(new THREE.Vector3(1, 0, 0), -rotateAngle);
+    }
+
     // Rotating left or right
     if (this.keyboard.pressed('a') || this.keyboard.pressed('left')) {
         this.camera.rotateOnAxis(new THREE.Vector3(0, 1, 0), rotateAngle);
     }
     if (this.keyboard.pressed('d') || this.keyboard.pressed('right')) {
         this.camera.rotateOnAxis(new THREE.Vector3(0, 1, 0), -rotateAngle);
-    }
-
-    // Moving up and down
-    if (this.keyboard.pressed('r')) {
-        this.camera.translateY(moveDistance)
-    }
-    if (this.keyboard.pressed('f')) {
-        this.camera.translateY(-moveDistance);
     }
 };

@@ -3,9 +3,9 @@ CONFIG = Object.freeze({
     ORIGIN:                 {X: 0, Y: 0, Z: 0},
     BLOCK_TEXTURE_DIR:      'res/textures/blocks/',
 
-    CHUNK_WIDTH:            20,
-    CHUNK_HEIGHT:           10,
-    CHUNK_LENGTH:           20,
+    CHUNK_WIDTH:            15,
+    CHUNK_HEIGHT:           7,
+    CHUNK_LENGTH:           15,
 
     LIGHT_COLOR:            0xffffff, // white
     LIGHT_BRIGHTNESS:       1,
