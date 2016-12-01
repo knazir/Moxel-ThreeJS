@@ -20,4 +20,4 @@ Controls
 - a, d to rotate left/right
 - q, e to strafe left, right
 - r, f to move up/down
-- t, g to look (rotate) up/down - thanks Ryan Smith
+- t, g to look (rotate) up/down
