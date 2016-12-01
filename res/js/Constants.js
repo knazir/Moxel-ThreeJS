@@ -3,9 +3,9 @@ CONFIG = Object.freeze({
     ORIGIN:                 {X: 0, Y: 0, Z: 0},
     BLOCK_TEXTURE_DIR:      'res/textures/blocks/',
 
-    CHUNK_WIDTH:            15,
-    CHUNK_HEIGHT:           7,
-    CHUNK_LENGTH:           15,
+    CHUNK_WIDTH:            20,
+    CHUNK_HEIGHT:           10,
+    CHUNK_LENGTH:           20,
 
     LIGHT_COLOR:            0xffffff, // white
     LIGHT_BRIGHTNESS:       1,
@@ -33,6 +33,7 @@ CONFIG = Object.freeze({
     NOISE_OCTAVES:          5,
     NOISE_AMPLITUDE:        1.0,
     NOISE_PERSISTENCE:      0.45,
+    NOISE_FACTOR:           0.05
 });
 
 BLOCK_TYPES = Object.freeze({
