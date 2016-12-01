@@ -34,4 +34,12 @@ CameraControls.prototype.update = function() {
     if (this.keyboard.pressed('d') || this.keyboard.pressed('right')) {
         this.camera.rotateOnAxis(new THREE.Vector3(0, 1, 0), -rotateAngle);
     }
+
+    // Moving up and down
+    if (this.keyboard.pressed('r')) {
+        this.camera.translateY(moveDistance)
+    }
+    if (this.keyboard.pressed('f')) {
+        this.camera.translateY(-moveDistance);
+    }
 };
