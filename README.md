@@ -9,8 +9,8 @@ A work-in-progress Voxel engine written in JavaScript using the Three.js library
 -----
 Links
 -----
-Rendering Sample: https://knazir.github.io/Moxel-ThreeJS/index.html
-World Demo: https://knazir.github.io/Moxel-ThreeJS/world.html
+- Rendering Sample: https://knazir.github.io/Moxel-ThreeJS/index.html
+- World Demo: https://knazir.github.io/Moxel-ThreeJS/world.html
 
 
 --------
