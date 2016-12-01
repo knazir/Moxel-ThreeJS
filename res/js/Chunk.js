@@ -9,16 +9,19 @@ function Chunk(width, height, length) {
 Chunk.prototype.constructor = Chunk;
 
 Chunk.prototype.generateBlocks = function() {
+    var perlinNoiseArray = generatePerlinNoise(this.width, this.length, CONFIG.NOISE_OCTAVES);
+
     for (var x = 0; x < this.width; x++) {
         for (var z = 0; z < this.length; z++) {
-            var actualHeight = randomInteger(1, this.height);
+            var actualHeight = Math.trunc(this.height * clamp(perlinNoiseArray[x][z]));
 
             // fill blocks
             for (var y = 0; y < actualHeight; y++) {
                 var actualX = CONFIG.ORIGIN.X + (x * CONFIG.CUBE_SIZE),
                     actualY = CONFIG.ORIGIN.Y + (y * CONFIG.CUBE_SIZE),
-                    actualZ = CONFIG.ORIGIN.Z + (z * CONFIG.CUBE_SIZE);
-                this.blocks[x][y][z] = this.blockFactory.createBlock(actualX, actualY, actualZ, randomInteger(1, 3));
+                    actualZ = CONFIG.ORIGIN.Z + (z * CONFIG.CUBE_SIZE),
+                    type    = getBlockTypeByHeight(y, actualHeight);
+                this.blocks[x][y][z] = this.blockFactory.createBlock(actualX, actualY, actualZ, type);
             }
 
             // fill air
@@ -37,7 +40,7 @@ Chunk.prototype.addBlocksToScene = function(scene) {
         for (var z = CONFIG.ORIGIN.Z; z < this.length; z++) {
             for (var y = CONFIG.ORIGIN.Y; y < this.height; y++) {
                 var block = this.blocks[x][y][z];
-                if (BLOCK_TYPES[block.getType()]['NAME'] !== 'AIR' && shouldRender(this.blocks, x, y, z)) {
+                if (block.getType() !== BLOCK_TYPES.AIR && shouldRender(this.blocks, x, y, z)) {
                     scene.add(this.blocks[x][y][z].getCube());
                 }
             }

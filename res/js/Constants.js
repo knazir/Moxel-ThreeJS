@@ -3,9 +3,9 @@ CONFIG = Object.freeze({
     ORIGIN:                 {X: 0, Y: 0, Z: 0},
     BLOCK_TEXTURE_DIR:      'res/textures/blocks/',
 
-    CHUNK_WIDTH:            10,
-    CHUNK_HEIGHT:           5,
-    CHUNK_LENGTH:           10,
+    CHUNK_WIDTH:            20,
+    CHUNK_HEIGHT:           10,
+    CHUNK_LENGTH:           20,
 
     LIGHT_COLOR:            0xffffff, // white
     LIGHT_BRIGHTNESS:       1,
@@ -28,10 +28,19 @@ CONFIG = Object.freeze({
     RENDERER_CANVAS_ID:     '#container',
     RENDERER_ALPHA:         true,
 
-    COLOR_SKY:              '#87CEFA'
+    COLOR_SKY:              '#87CEFA',
+
+    NOISE_OCTAVES:          5,
+    NOISE_AMPLITUDE:        1.0,
+    NOISE_PERSISTENCE:      0.45,
 });
 
 BLOCK_TYPES = Object.freeze({
+    AIR:    0,
+    DIRT:   1,
+    STONE:  2,
+    SAND:   3,
+
     0:  {NAME: 'AIR',       TEXTURE: null},
     1:  {NAME: 'DIRT',      TEXTURE: 'dirt.png'},
     2:  {NAME: 'STONE,',    TEXTURE: 'gravel_stone.png'},
