@@ -40,12 +40,16 @@ function createWorld() {
     };
 
     var createSkybox = function() {
-        var textureFactory  = new TextureFactory(),
-            geometry        = new THREE.BoxGeometry(CONFIG.SKYBOX_SIZE, CONFIG.SKYBOX_SIZE, CONFIG.SKYBOX_SIZE),
-            material        = textureFactory.createTextureMaterials(BLOCK_TYPES.SKYBOX),
-            skybox          = new THREE.Mesh(geometry, material);
-        skybox.position.set(CONFIG.CAMERA_INITIAL_X, CONFIG.CAMERA_INITIAL_Y, CONFIG.CAMERA_INITIAL_Z);
-        return skybox;
+        var skyGeometry     = new THREE.SphereGeometry(CONFIG.SKYBOX_SIZE, CONFIG.SKYBOX_WIDTH,CONFIG.SKYBOX_HEIGHT),
+            textureLoader   = new THREE.TextureLoader(),
+            texture         = textureLoader.load(CONFIG.BLOCK_TEXTURE_DIR + BLOCK_TYPES[BLOCK_TYPES.SKYBOX].SPHERE),
+            skyMaterial     = new THREE.MeshBasicMaterial({map: texture, side: THREE.DoubleSide}),
+            skyBox          = new THREE.Mesh(skyGeometry, skyMaterial);
+
+        skyBox.material.fog = false;
+        skyBox.position.set(CONFIG.SKYBOX_ORIGIN.X, CONFIG.SKYBOX_ORIGIN.Y, CONFIG.SKYBOX_ORIGIN.Z);
+        skyBox.rotation.x = Math.PI / 4;
+        return skyBox;
     };
 
 
@@ -124,19 +128,8 @@ function createWorld() {
 
     var renderSample = function () {
         noise.seed(Math.random());
-        skybox = createSkybox();
-        addComponentsToScene(scene, light, camera, skybox);
-
-        // var skyGeometry = new THREE.SphereGeometry(5000,50,50);
-        // var texture;
-        // texture = THREE.ImageUtils.loadTexture('res/textures/blocks/grass_top.png');
-
-        // var skyMaterial = new THREE.MeshBasicMaterial({map: texture, side: THREE.DoubleSide });
-        // _skyBox = new THREE.Mesh( skyGeometry, skyMaterial );
-        // _skyBox.material.fog = false;
-        // _skyBox.position.set(0,0,0);
-        // _skyBox.rotation.x = Math.PI/4;
-        // scene.add( _skyBox );
+        skyBox = createSkybox();
+        addComponentsToScene(scene, light, camera, skyBox);
 
         setBackground();
         chunk.addBlocksToScene(scene);

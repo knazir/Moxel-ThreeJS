@@ -17,7 +17,7 @@ CONFIG = Object.freeze({
     CAMERA_FOV:             35,
     CAMERA_ASPECT_RATIO:    window.innerWidth / window.innerHeight,
     CAMERA_NEAR_PLANE:      1,
-    CAMERA_FAR_PLANE:       1000,
+    CAMERA_FAR_PLANE:       10000,
     CAMERA_INITIAL_X:       45,
     CAMERA_INITIAL_Y:       20,
     CAMERA_INITIAL_Z:       220,
@@ -28,8 +28,11 @@ CONFIG = Object.freeze({
     RENDERER_CANVAS_ID:     '#container',
     RENDERER_ALPHA:         true,
 
-    SKYBOX_SIZE:            250,
+    SKYBOX_SIZE:            5000,
+    SKYBOX_WIDTH:           50,
+    SKYBOX_HEIGHT:          50,
     SKYBOX_COLOR:           '#87CEFA',
+    SKYBOX_ORIGIN:          {X: 0, Y: 0, Z: 0},
 
     NOISE_OCTAVES:          5,
     NOISE_AMPLITUDE:        1.0,
@@ -76,7 +79,8 @@ BLOCK_TYPES = Object.freeze({
             NAME:   'SKYBOX',
             TYPE:   'custom',
             TOP:    'skybox_top.png',       BOTTOM: 'skybox_bottom.png',        LEFT: 'skybox_side.png',
-            RIGHT:  'skybox_sideHills.png', FRONT:  'skybox_sideClouds.png',    BACK: 'skybox_side.png'
+            RIGHT:  'skybox_sideHills.png', FRONT:  'skybox_sideClouds.png',    BACK: 'skybox_side.png',
+            SPHERE: 'skybox_top.png'
         }
 });
 
