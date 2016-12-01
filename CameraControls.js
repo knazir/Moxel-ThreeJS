@@ -19,6 +19,14 @@ CameraControls.prototype.update = function() {
         this.camera.translateZ(moveDistance);
     }
 
+    // Leftward and rightward strafing
+    if (this.keyboard.pressed('q')) {
+        this.camera.translateX(-moveDistance);
+    }
+    if (this.keyboard.pressed('e')) {
+        this.camera.translateX(moveDistance);
+    }
+
     // Rotating left or right
     if (this.keyboard.pressed('a') || this.keyboard.pressed('left')) {
         this.camera.rotateOnAxis(new THREE.Vector3(0, 1, 0), rotateAngle);
