@@ -21,21 +21,14 @@ Block.prototype.getType = function() {
  * Cube wrapper class instantiator
  */
 function BlockFactory() {
-    this.getTextureFileByBlockType = function(type) {
-        return CONFIG.BLOCK_TEXTURE_DIR + BLOCK_TYPES[type].TEXTURE;
-    };
+    this.textureFactory = new TextureFactory();
 
     this.createCubeMaterial = function(type) {
         if (BLOCK_TYPES[type]['NAME'] === 'AIR') {
             return;
         }
 
-        var textureLoader   = new THREE.TextureLoader(),
-            texture         = textureLoader.load(this.getTextureFileByBlockType(type)),
-            cubeMaterials   = [];
-        for (var i = 0; i < 6; i++) {
-            cubeMaterials.push(new THREE.MeshLambertMaterial({ map: texture }));
-        }
+        cubeMaterials = this.textureFactory.createTextureMaterials(type);
         return new THREE.MultiMaterial(cubeMaterials);
     };
 
@@ -52,4 +45,69 @@ BlockFactory.prototype.constructor = BlockFactory;
 
 BlockFactory.prototype.createBlock = function(x, y, z, type) {
     return new Block(type, this.createCubeModel(x, y, z, type));
+};
+
+
+/**
+ * Cube texture creator
+ */
+function TextureFactory() {
+    this.textureLoader = new THREE.TextureLoader();
+    this.cachedTextures = {}; // cache texture material arrays to avoid recreating them
+
+    this.createMaterialFromTexture = function(texture) {
+        return new THREE.MeshLambertMaterial({ map: texture });
+    };
+
+    this.createSimpleTexturedCube = function(cubeMeta) {
+        if (cubeMeta.NAME in this.cachedTextures) {
+            return this.cachedTextures[cubeMeta.NAME];
+        }
+
+        var texture         = this.textureLoader.load(CONFIG.BLOCK_TEXTURE_DIR + cubeMeta.TEXTURE),
+            cubeMaterials   = [];
+        for (var i = 0; i < 6; i++) {
+            cubeMaterials.push(this.createMaterialFromTexture(texture));
+        }
+
+        this.cachedTextures[cubeMeta.NAME] = cubeMaterials;
+        return cubeMaterials;
+    };
+
+    this.createToppedCube = function(cubeMeta) {
+        if (cubeMeta.NAME in this.cachedTextures) {
+            return this.cachedTextures[cubeMeta.NAME];
+        }
+
+        var topTexture      = this.textureLoader.load(CONFIG.BLOCK_TEXTURE_DIR + cubeMeta.TOP_TEXTURE),
+            bottomTexture   = this.textureLoader.load(CONFIG.BLOCK_TEXTURE_DIR + cubeMeta.BOTTOM_TEXTURE),
+            bodyTexture     = this.textureLoader.load(CONFIG.BLOCK_TEXTURE_DIR + cubeMeta.BODY_TEXTURE),
+            cubeMaterials   = new Array(6);
+        
+        for (var i = 0; i < BLOCK_FACE_ASSIGNMENTS.BODY.length; i++) {
+            cubeMaterials[BLOCK_FACE_ASSIGNMENTS.BODY[i]] = this.createMaterialFromTexture(bodyTexture);
+        }
+        cubeMaterials[BLOCK_FACE_ASSIGNMENTS.TOP] = this.createMaterialFromTexture(topTexture);
+        cubeMaterials[BLOCK_FACE_ASSIGNMENTS.BOTTOM] = this.createMaterialFromTexture(bottomTexture);
+
+        this.cachedTextures[cubeMeta.NAME] = cubeMaterials;
+        return cubeMaterials;
+    };
+}
+
+TextureFactory.prototype.constructor = TextureFactory;
+
+TextureFactory.prototype.createTextureMaterials = function(cubeType) {
+    var cubeMeta        = BLOCK_TYPES[cubeType],
+        cubeMaterials   = [];
+
+    if (cubeMeta.TYPE === 'simple') {
+        cubeMaterials = this.createSimpleTexturedCube(cubeMeta);
+    } else if (cubeMeta.TYPE === 'topped') {
+        cubeMaterials = this.createToppedCube(cubeMeta);
+    } else {
+        console.log('unable to find ' + cubeMeta.NAME);
+    }
+
+    return cubeMaterials;
 };

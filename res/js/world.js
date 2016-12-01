@@ -114,7 +114,7 @@ function createWorld() {
     };
 
     var renderSample = function () {
-        noise.seed(randomInteger(1, 65536));
+        noise.seed(Math.random());
         addComponentsToScene(scene, light, camera);
         setBackground();
         chunk.addBlocksToScene(scene);

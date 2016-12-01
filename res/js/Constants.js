@@ -4,7 +4,7 @@ CONFIG = Object.freeze({
     BLOCK_TEXTURE_DIR:      'res/textures/blocks/',
 
     CHUNK_WIDTH:            20,
-    CHUNK_HEIGHT:           10,
+    CHUNK_HEIGHT:           20,
     CHUNK_LENGTH:           20,
 
     LIGHT_COLOR:            0xffffff, // white
@@ -37,13 +37,43 @@ CONFIG = Object.freeze({
 });
 
 BLOCK_TYPES = Object.freeze({
+    // Name -> Code
     AIR:    0,
     DIRT:   1,
     STONE:  2,
     SAND:   3,
+    GRASS:  4,
 
-    0:  {NAME: 'AIR',       TEXTURE: null},
-    1:  {NAME: 'DIRT',      TEXTURE: 'dirt.png'},
-    2:  {NAME: 'STONE,',    TEXTURE: 'gravel_stone.png'},
-    3:  {NAME: 'SAND',      TEXTURE: 'sand.png'}
+    // Code -> Meta
+    0:  {
+            NAME: 'AIR',    TYPE: 'simple',
+            TEXTURE: null
+        },
+    1:  {
+            NAME: 'DIRT',   TYPE: 'simple',
+            TEXTURE: 'dirt.png'
+        },
+    2:  {
+            NAME: 'STONE',  TYPE: 'simple',
+            TEXTURE: 'gravel_stone.png'
+        },
+    3:  {
+            NAME: 'SAND',   TYPE: 'simple',
+            TEXTURE: 'sand.png'
+        },
+    4:  {
+            NAME: 'GRASS',  TYPE: 'topped',
+            BODY_TEXTURE: 'dirt_grass.png',     TOP_TEXTURE: 'grass_top.png',   BOTTOM_TEXTURE: 'dirt.png'
+        }
 });
+
+BLOCK_FACE_ASSIGNMENTS = {
+    LEFT:   0,
+    RIGHT:  1,
+    TOP:    2,
+    BOTTOM: 3,
+    FRONT:  4,
+    BACK:   5,
+
+    BODY: [0, 1, 4, 5]
+};

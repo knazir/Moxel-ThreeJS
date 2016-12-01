@@ -47,9 +47,11 @@ var shouldRender = function(blocks, x, y, z) {
 };
 
 var getBlockTypeByHeight = function(currentHeight, actualHeight) {
-    if (currentHeight == actualHeight - 1) {
+    if (currentHeight === actualHeight - 1) {
+        return BLOCK_TYPES.GRASS;
+    } else if (currentHeight === actualHeight - 2 || currentHeight === actualHeight - 3) {
         return BLOCK_TYPES.DIRT;
-    } else if (currentHeight == actualHeight - 2) {
+    } else if (currentHeight === actualHeight - 4) {
         return BLOCK_TYPES.SAND;
     } else {
         return BLOCK_TYPES.STONE;
