@@ -28,18 +28,18 @@ CameraControls.prototype.update = function() {
     }
 
     // Moving up and down
-    if (this.keyboard.pressed('t')) {
+    if (this.keyboard.pressed('r')) {
         this.camera.translateY(moveDistance)
     }
-    if (this.keyboard.pressed('g')) {
+    if (this.keyboard.pressed('f')) {
         this.camera.translateY(-moveDistance);
     }
 
     // Rotating up or down
-    if (this.keyboard.pressed('r')) {
+    if (this.keyboard.pressed('t')) {
         this.camera.rotateOnAxis(new THREE.Vector3(1, 0, 0), rotateAngle);
     }
-    if (this.keyboard.pressed('f')) {
+    if (this.keyboard.pressed('g')) {
         this.camera.rotateOnAxis(new THREE.Vector3(1, 0, 0), -rotateAngle);
     }
 

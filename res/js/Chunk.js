@@ -9,11 +9,8 @@ function Chunk(width, height, length) {
 Chunk.prototype.constructor = Chunk;
 
 Chunk.prototype.generateBlocks = function() {
-    var perlinNoiseArray = generatePerlinNoise(this.width, this.length, CONFIG.NOISE_OCTAVES);
-
     for (var x = 0; x < this.width; x++) {
         for (var z = 0; z < this.length; z++) {
-            // var actualHeight = Math.trunc(this.height * clamp(perlinNoiseArray[x][z]));
             var noiseValue = noise.perlin2(x * CONFIG.NOISE_FACTOR, z * CONFIG.NOISE_FACTOR);
             var actualHeight = 1 + Math.trunc(this.height * clamp(Math.abs(noiseValue))); // keep height at least 1
 
