@@ -4,6 +4,8 @@
 function Block(type, cube) {
     this.type = type;
     this.cube = cube;
+
+    // TODO: Internally keep track of neighbor count to improve rerendering
 }
 
 Block.prototype.constructor = Block;
@@ -56,7 +58,7 @@ function TextureFactory() {
     this.cachedTextures = {}; // cache texture material arrays to avoid recreating them
 
     this.createMaterialFromTexture = function(texture) {
-        return new THREE.MeshLambertMaterial({ map: texture });
+        return new THREE.MeshLambertMaterial({ map: texture, shading: THREE.FlatShading });
     };
 
     this.createSimpleTexturedCube = function(cubeMeta) {

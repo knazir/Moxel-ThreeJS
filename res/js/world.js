@@ -21,7 +21,10 @@ function createWorld() {
     };
 
     var createRenderer = function () {
-        var renderer = new THREE.WebGLRenderer({alpha: CONFIG.RENDERER_ALPHA});
+        var renderer = new THREE.WebGLRenderer({
+            alpha: CONFIG.RENDERER_ALPHA,
+            antialias: CONFIG.RENDERER_ANTIALIAS
+        });
         renderer.setSize(CONFIG.RENDERER_WIDTH, CONFIG.RENDERER_HEIGHT);
         var canvasContainer = document.querySelector(CONFIG.RENDERER_CANVAS_ID);
         canvasContainer.innerHTML = '';
@@ -140,6 +143,7 @@ function createWorld() {
 
     setupControls();
     renderSample();
+    console.log(renderer.info);
 }
 
 createWorld();

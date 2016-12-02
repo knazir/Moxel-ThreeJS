@@ -26,7 +26,8 @@ CONFIG = Object.freeze({
     RENDERER_WIDTH:         window.innerWidth,
     RENDERER_HEIGHT:        window.innerHeight,
     RENDERER_CANVAS_ID:     '#container',
-    RENDERER_ALPHA:         true,
+    RENDERER_ALPHA:         false,
+    RENDERER_ANTIALAIS:     true,
 
     SKYBOX_SIZE:            5000,
     SKYBOX_WIDTH:           50,
