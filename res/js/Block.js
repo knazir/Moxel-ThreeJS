@@ -24,6 +24,7 @@ Block.prototype.getType = function() {
  */
 function BlockFactory() {
     this.textureFactory = new TextureFactory();
+    this.geometry       = new THREE.BoxBufferGeometry(CONFIG.CUBE_SIZE, CONFIG.CUBE_SIZE, CONFIG.CUBE_SIZE);
 
     this.createCubeMaterial = function(type) {
         if (BLOCK_TYPES[type]['NAME'] === 'AIR') {
@@ -35,9 +36,9 @@ function BlockFactory() {
     };
 
     this.createCubeModel = function(x, y, z, type) {
-        var geometry    = new THREE.BoxBufferGeometry(CONFIG.CUBE_SIZE, CONFIG.CUBE_SIZE, CONFIG.CUBE_SIZE),
-            material    = this.createCubeMaterial(type),
-            cube        = new THREE.Mesh(geometry, material);
+        var material    = this.createCubeMaterial(type),
+            inefficient = new THREE.BoxBufferGeometry(CONFIG.CUBE_SIZE, CONFIG.CUBE_SIZE, CONFIG.CUBE_SIZE);
+            cube        = new THREE.Mesh(inefficient, material);
         cube.position.set(x, y, z);
         return cube;
     };
