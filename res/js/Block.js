@@ -37,8 +37,7 @@ function BlockFactory() {
 
     this.createCubeModel = function(x, y, z, type) {
         var material    = this.createCubeMaterial(type),
-            inefficient = new THREE.BoxBufferGeometry(CONFIG.CUBE_SIZE, CONFIG.CUBE_SIZE, CONFIG.CUBE_SIZE);
-            cube        = new THREE.Mesh(inefficient, material);
+            cube        = new THREE.Mesh(this.geometry, material);
         cube.position.set(x, y, z);
         return cube;
     };
