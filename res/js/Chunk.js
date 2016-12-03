@@ -33,6 +33,15 @@ Chunk.prototype.generateBlocks = function() {
             }
         }
     }
+
+    // count neighbors
+    for (x = 0; x < this.width; x++) {
+        for (z = 0; z < this.length; z++) {
+            for (y = 0; y < this.height; y++) {
+                this.blocks[x][y][z].neighbors = countNeighbors(this.blocks, x, y, z);
+            }
+        }
+    }
 };
 
 Chunk.prototype.addBlocksToScene = function() {
@@ -40,7 +49,7 @@ Chunk.prototype.addBlocksToScene = function() {
         for (var z = CONFIG.ORIGIN.Z; z < this.length; z++) {
             for (var y = CONFIG.ORIGIN.Y; y < this.height; y++) {
                 var block = this.blocks[x][y][z];
-                if (block.getType() !== BLOCK_TYPES.AIR && shouldRender(this.blocks, x, y, z)) {
+                if (block.getType() !== BLOCK_TYPES.AIR && shouldRender(this.blocks[x][y][z])) {
                     this.scene.add(this.blocks[x][y][z].getCube());
                 }
             }

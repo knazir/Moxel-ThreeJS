@@ -26,24 +26,27 @@ var inBounds = function(x, y, z, width, height, length) {
   return x >= 0 && x < width && y >= 0 && y < height && z >= 0 && z < length;
 };
 
-var shouldRender = function(blocks, x, y, z) {
-    var width   = blocks.length,
-        height  = blocks[0].length,
-        length  = blocks[0][0].length;
+var shouldRender = function(block) {
+    return block.neighbors !== CONFIG.NEIGHBORS_TO_CULL;
+};
+
+var countNeighbors = function(blocks, x, y, z) {
+    var neighbors   = 0,
+        width       = blocks.length,
+        height      = blocks[0].length,
+        length      = blocks[0][0].length;
 
     for (var i = x - 1; i <= x + 1; i++) {
         for (var j = y - 1; j <= y + 1; j++) {
             for (var k = z - 1; k <= z + 1; k++) {
                 var cubeInBounds = inBounds(i, j, k, width, height, length);
-                if (cubeInBounds && blocks[i][j][k].getType() === BLOCK_TYPES.AIR) {
-                    return true;
-                } else if (!cubeInBounds) {
-                    return true;
+                if ((cubeInBounds && blocks[i][j][k].getType() !== BLOCK_TYPES.AIR)) {
+                    neighbors++;
                 }
             }
         }
     }
-    return false;
+    return neighbors;
 };
 
 var getBlockTypeByHeight = function(currentHeight, actualHeight) {

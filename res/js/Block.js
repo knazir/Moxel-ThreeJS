@@ -4,11 +4,11 @@
 function Block(type, cube) {
     this.type = type;
     this.cube = cube;
-
-    // TODO: Internally keep track of neighbor count to improve rerendering
 }
 
 Block.prototype.constructor = Block;
+
+Block.prototype.neighbors = 0;
 
 Block.prototype.getCube = function() {
     return this.cube;

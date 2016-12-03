@@ -2,6 +2,7 @@ CONFIG = Object.freeze({
     CUBE_SIZE:              10,
     ORIGIN:                 {X: 0, Y: 0, Z: 0},
     BLOCK_TEXTURE_DIR:      'res/textures/blocks/',
+    NEIGHBORS_TO_CULL:      27,
 
     CHUNK_WIDTH:            20,
     CHUNK_HEIGHT:           20,
