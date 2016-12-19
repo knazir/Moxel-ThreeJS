@@ -42,12 +42,8 @@ function createWorld() {
         return chunk;
     };
 
-    var createKeyboardControls = function (camera, clock) {
-        return new CameraControls(camera, new THREEx.KeyboardState(), clock);
-    };
-
-    var createMouseControls = function(camera, renderer) {
-        return new THREE.FirstPersonControls(camera, renderer.domElement);
+    var createControls = function(camera, renderer, clock) {
+        return new CameraControls(camera, renderer, clock);
     };
 
     var createSkybox = function() {
@@ -76,8 +72,7 @@ function createWorld() {
 
     var draw = function () {
         window.requestAnimationFrame(function () {
-            mouseControls.update(clock.getDelta());
-            //keyControls.update();
+            controls.update();
             if (CONFIG.LIGHT_FOLLOW_CAMERA) {
                 light.position.set(camera.position.x, camera.position.y, camera.position.z);
                 light.rotation.set(camera.rotation.x, camera.rotation.y, camera.rotation.z);
@@ -91,27 +86,26 @@ function createWorld() {
     /* * * * * * * * * * *
      * Engine Components *
      * * * * * * * * * * */
-    var clock           = createClock(),
-        light           = createLight(),
-        camera          = createCamera(),
-        scene           = createScene(),
-        renderer        = createRenderer(),
-        chunk           = createChunk(scene),
-        //keyControls     = createKeyboardControls(camera, clock),
-        mouseControls   = createMouseControls(camera, scene);
+    var clock       = createClock(),
+        light       = createLight(),
+        camera      = createCamera(),
+        scene       = createScene(),
+        renderer    = createRenderer(),
+        // TODO: Create scene wrapper class that internally tracks all chunks
+        chunk       = createChunk(scene),
+        controls    = createControls(camera, renderer, clock);
 
 
     /* * * * * * * *
      * Scene Setup *
      * * * * * * * */
     var resetElements = function () {
-        clock           = createClock();
-        light           = createLight();
-        camera          = createCamera();
-        scene           = createScene(light, camera);
-        renderer        = createRenderer();
-        //keyControls     = createKeyboardControls(camera, clock);
-        mouseControls   = createMouseControls(camera, scene);
+        clock       = createClock();
+        light       = createLight();
+        camera      = createCamera();
+        scene       = createScene(light, camera);
+        renderer    = createRenderer();
+        controls    = createControls(camera, renderer, clock);
     };
 
     var setBackground = function () {
@@ -125,22 +119,8 @@ function createWorld() {
         renderSample();
     };
 
-    var disableKeyScrolling = function (keyEvent) {
-        switch (keyEvent.keyCode) {
-            case 37:
-            case 39:
-            case 38:
-            case 40: // Arrow keys
-            case 32: // Space
-                keyEvent.preventDefault();
-                break;
-            default:
-                break;
-        }
-    };
-
     var setupControls = function () {
-        window.addEventListener('keydown', disableKeyScrolling, false);
+        controls.setup();
     };
 
     var renderSample = function () {

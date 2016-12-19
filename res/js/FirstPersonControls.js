@@ -12,8 +12,8 @@ THREE.FirstPersonControls = function (object, domElement) {
 
 	this.enabled = true;
 
-	this.movementSpeed = 100.0;
-	this.lookSpeed = 0.6;
+	this.movementSpeed = CONFIG.CAMERA_MOVE_SPEED;
+	this.lookSpeed = CONFIG.CAMERA_LOOK_SPEED;
 
 	this.lookVertical = true;
 	this.autoForward = false;
