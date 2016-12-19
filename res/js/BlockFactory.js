@@ -7,7 +7,7 @@ function BlockFactory() {
 
     this.createCubeMaterial = function(type) {
         if (BLOCK_TYPES[type]['NAME'] === 'AIR') {
-            return;
+            return null;
         }
 
         cubeMaterials = this.textureFactory.createTextureMaterials(type);

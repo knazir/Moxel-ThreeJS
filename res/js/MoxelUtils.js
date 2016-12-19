@@ -10,10 +10,7 @@ var randomInteger = function(low, high) {
 
 /* * * * *
  * Chunk *
- * * * * *
- *
- * TODO: Makes these methods instance methods of the Chunk class
- */
+ * * * * */
 var create3DArray = function(width, height, length) {
     var blocks = new Array(width);
     for (var i = 0; i < width; i++) {
@@ -23,45 +20,6 @@ var create3DArray = function(width, height, length) {
         }
     }
     return blocks;
-};
-
-var inBounds = function(x, y, z, width, height, length) {
-  return x >= 0 && x < width && y >= 0 && y < height && z >= 0 && z < length;
-};
-
-var shouldRender = function(block) {
-    return block.neighbors !== CONFIG.NEIGHBORS_TO_CULL;
-};
-
-var countNeighbors = function(blocks, x, y, z) {
-    var neighbors   = 0,
-        width       = blocks.length,
-        height      = blocks[0].length,
-        length      = blocks[0][0].length;
-
-    for (var i = x - 1; i <= x + 1; i++) {
-        for (var j = y - 1; j <= y + 1; j++) {
-            for (var k = z - 1; k <= z + 1; k++) {
-                var cubeInBounds = inBounds(i, j, k, width, height, length);
-                if ((cubeInBounds && blocks[i][j][k].getType() !== BLOCK_TYPES.AIR)) {
-                    neighbors++;
-                }
-            }
-        }
-    }
-    return neighbors;
-};
-
-var getBlockTypeByHeight = function(currentHeight, actualHeight) {
-    if (currentHeight === actualHeight - 1) {
-        return BLOCK_TYPES.GRASS;
-    } else if (currentHeight === actualHeight - 2 || currentHeight === actualHeight - 3) {
-        return BLOCK_TYPES.DIRT;
-    } else if (currentHeight === actualHeight - 4) {
-        return BLOCK_TYPES.SAND;
-    } else {
-        return BLOCK_TYPES.STONE;
-    }
 };
 
 

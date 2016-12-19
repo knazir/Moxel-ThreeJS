@@ -5,8 +5,43 @@ function Chunk(scene, width, height, length) {
     this.length = length;
     this.blockFactory = new BlockFactory();
     this.blocks = create3DArray(width, height, length);
+
+
+    /* * * * * * * * * *
+     * Private Methods *
+     * * * * * * * * * */
+
+    /*
+     * Checks if the given coordinates are within the bounds of this chunk.
+     */
+    this.inBounds = function(x, y, z) {
+        return x >= 0 && x < this.width && y >= 0 && y < this.height && z >= 0 && z < this.length;
+    };
+
+    /*
+     * Counts the number of non-air blocks surrounding the block at the given coordinate (if it is within bounds).
+     */
+    this.countNeighbors = function(x, y, z) {
+        var neighbors   = 0;
+
+        for (var i = x - 1; i <= x + 1; i++) {
+            for (var j = y - 1; j <= y + 1; j++) {
+                for (var k = z - 1; k <= z + 1; k++) {
+                    var cubeInBounds = this.inBounds(i, j, k);
+                    if ((cubeInBounds && this.blocks[i][j][k].getType() !== BLOCK_TYPES.AIR)) {
+                        neighbors++;
+                    }
+                }
+            }
+        }
+        return neighbors;
+    };
 }
 
+
+/* * * * * * * *  *
+ * Public Methods *
+ * * * * * * * *  */
 Chunk.prototype.constructor = Chunk;
 
 /*
@@ -23,7 +58,7 @@ Chunk.prototype.generateBlocks = function() {
                 var actualX = CONFIG.ORIGIN.X + (x * CONFIG.CUBE_SIZE),
                     actualY = CONFIG.ORIGIN.Y + (y * CONFIG.CUBE_SIZE),
                     actualZ = CONFIG.ORIGIN.Z + (z * CONFIG.CUBE_SIZE),
-                    type    = getBlockTypeByHeight(y, actualHeight);
+                    type    = Chunk.getBlockTypeByHeight(y, actualHeight);
                 this.blocks[x][y][z] = this.blockFactory.createBlock(actualX, actualY, actualZ, type);
             }
 
@@ -37,11 +72,11 @@ Chunk.prototype.generateBlocks = function() {
         }
     }
 
-    // count neighbors
+    // count neighbors (must happen after all blocks in chunk set)
     for (x = 0; x < this.width; x++) {
         for (z = 0; z < this.length; z++) {
             for (y = 0; y < this.height; y++) {
-                this.blocks[x][y][z].neighbors = countNeighbors(this.blocks, x, y, z);
+                this.blocks[x][y][z].neighbors = this.countNeighbors(x, y, z);
             }
         }
     }
@@ -55,7 +90,7 @@ Chunk.prototype.addBlocksToScene = function() {
         for (var z = CONFIG.ORIGIN.Z; z < this.length; z++) {
             for (var y = CONFIG.ORIGIN.Y; y < this.height; y++) {
                 var block = this.blocks[x][y][z];
-                if (block.getType() !== BLOCK_TYPES.AIR && shouldRender(this.blocks[x][y][z])) {
+                if (block.getType() !== BLOCK_TYPES.AIR && block.shouldRender()) {
                     this.scene.add(this.blocks[x][y][z].getCube());
                 }
             }
@@ -71,7 +106,7 @@ Chunk.prototype.clearBlocksFromScene = function() {
         for (var z = CONFIG.ORIGIN.Z; z < this.length; z++) {
             for (var y = CONFIG.ORIGIN.Y; y < this.height; y++) {
                 var block = this.blocks[x][y][z];
-                if (block.getType() !== BLOCK_TYPES.AIR && shouldRender(this.blocks, x, y, z)) {
+                if (block.getType() !== BLOCK_TYPES.AIR && block.shouldRender()) {
                     this.scene.remove(this.blocks[x][y][z].getCube());
                 }
             }
@@ -86,8 +121,8 @@ Chunk.prototype.rerenderNeighbors = function(x, y, z) {
     for (var i = x - 1; i <= x + 1; i++) {
         for (var j = y - 1; j <= y + 1; j++) {
             for (var k = z - 1; k <= z + 1; k++) {
-                if (inBounds(i, j, k, this.width, this.height, this.length) &&
-                    shouldRender(this.blocks, i, j, k) && this.blocks[i][j][k].getType() !== BLOCK_TYPES.AIR) {
+                if (this.inBounds(i, j, k) && this.blocks[i][j][k].shouldRender() &&
+                    this.blocks[i][j][k].getType() !== BLOCK_TYPES.AIR) {
                     this.scene.add(this.blocks[i][j][k].getCube());
                 }
             }
@@ -103,9 +138,29 @@ Chunk.prototype.removeBlock = function(x, y, z) {
         voxelY = Math.trunc(y / CONFIG.CUBE_SIZE),
         voxelZ = Math.trunc(z / CONFIG.CUBE_SIZE);
 
-    if (inBounds(voxelX, voxelY, voxelZ, this.width, this.height, this.length)) {
+    if (this.inBounds(voxelX, voxelY, voxelZ)) {
         this.scene.remove(this.blocks[voxelX][voxelY][voxelZ].getCube());
         this.blocks[voxelX][voxelY][voxelZ] = STATIC_BLOCKS.AIR;
         this.rerenderNeighbors(voxelX, voxelY, voxelZ);
+    }
+};
+
+
+/* * * * * * * *  *
+ * Static Methods *
+ * * * * * * * *  */
+
+/*
+ * Given the current height and maximum heights of a column, returns the type of block that should be used.
+ */
+Chunk.getBlockTypeByHeight = function(currentHeight, maxColumnHeight) {
+    if (currentHeight === maxColumnHeight - 1) {
+        return BLOCK_TYPES.GRASS;
+    } else if (currentHeight === maxColumnHeight - 2 || currentHeight === maxColumnHeight - 3) {
+        return BLOCK_TYPES.DIRT;
+    } else if (currentHeight === maxColumnHeight - 4) {
+        return BLOCK_TYPES.SAND;
+    } else {
+        return BLOCK_TYPES.STONE;
     }
 };
