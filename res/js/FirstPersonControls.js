@@ -145,64 +145,67 @@ THREE.FirstPersonControls = function (object, domElement) {
 	};
 
 	this.update = function(delta) {
-		if (!this.enabled) {
-			return;
-		}
+        if (!this.enabled) {
+            return;
+        }
 
-		if (this.heightSpeed) {
-			var y = THREE.Math.clamp(this.object.position.y, this.heightMin, this.heightMax);
-			var heightDelta = y - this.heightMin;
+        if (this.heightSpeed) {
+            var y = THREE.Math.clamp(this.object.position.y, this.heightMin, this.heightMax);
+            var heightDelta = y - this.heightMin;
 
-			this.autoSpeedFactor = delta * (heightDelta * this.heightCoef);
-		} else {
-			this.autoSpeedFactor = 0.0;
-		}
+            this.autoSpeedFactor = delta * (heightDelta * this.heightCoef);
+        } else {
+            this.autoSpeedFactor = 0.0;
+        }
 
-		var actualMoveSpeed = delta * this.movementSpeed;
+        var actualMoveSpeed = delta * this.movementSpeed;
 
-		if (this.moveForward || (this.autoForward && ! this.moveBackward)) this.object.translateZ(- (actualMoveSpeed + this.autoSpeedFactor));
-		if (this.moveBackward) this.object.translateZ(actualMoveSpeed);
+        if (this.moveForward || (this.autoForward && !this.moveBackward)) this.object.translateZ(-(actualMoveSpeed + this.autoSpeedFactor));
+        if (this.moveBackward) this.object.translateZ(actualMoveSpeed);
 
-		if (this.moveLeft) this.object.translateX(-actualMoveSpeed);
-		if (this.moveRight) this.object.translateX(actualMoveSpeed);
+        if (this.moveLeft) this.object.translateX(-actualMoveSpeed);
+        if (this.moveRight) this.object.translateX(actualMoveSpeed);
 
-		if (this.moveUp) this.object.translateY(actualMoveSpeed);
-		if (this.moveDown) this.object.translateY(-actualMoveSpeed);
+        if (this.moveUp) this.object.translateY(actualMoveSpeed);
+        if (this.moveDown) this.object.translateY(-actualMoveSpeed);
 
-		var actualLookSpeed = delta * this.lookSpeed;
+        var actualLookSpeed = delta * this.lookSpeed;
 
-		if (!this.activeLook) {
-			actualLookSpeed = 0;
-		}
+        if (!this.activeLook) {
+            actualLookSpeed = 0;
+        }
 
-		var verticalLookRatio = 1;
+        var verticalLookRatio = 1;
 
-		if (this.constrainVertical) {
-			verticalLookRatio = Math.PI / (this.verticalMax - this.verticalMin);
-		}
+        if (this.constrainVertical) {
+            verticalLookRatio = Math.PI / (this.verticalMax - this.verticalMin);
+        }
 
-		this.lon += this.mouseX * actualLookSpeed;
-		if (this.lookVertical) this.lat -= this.mouseY * actualLookSpeed * verticalLookRatio;
+        this.lon += this.mouseX * actualLookSpeed;
+        if (this.lookVertical) this.lat -= this.mouseY * actualLookSpeed * verticalLookRatio;
 
-		this.lat = Math.max(-85, Math.min(85, this.lat));
-		this.phi = THREE.Math.degToRad(90 - this.lat);
+        this.lat = Math.max(-85, Math.min(85, this.lat));
+        this.phi = THREE.Math.degToRad(90 - this.lat);
 
-		this.theta = THREE.Math.degToRad(this.lon);
+        this.theta = THREE.Math.degToRad(this.lon);
 
-		if (this.constrainVertical) {
-			this.phi = THREE.Math.mapLinear(this.phi, 0, Math.PI, this.verticalMin, this.verticalMax);
-		}
+        if (this.constrainVertical) {
+            this.phi = THREE.Math.mapLinear(this.phi, 0, Math.PI, this.verticalMin, this.verticalMax);
+        }
 
-		var targetPosition 	= this.target,
-			position 		= this.object.position;
+        var targetPosition = this.target,
+            position = this.object.position;
 
-		targetPosition.x = position.x + 100 * Math.sin(this.phi) * Math.cos(this.theta);
-		targetPosition.y = position.y + 100 * Math.cos(this.phi);
-		targetPosition.z = position.z + 100 * Math.sin(this.phi) * Math.sin(this.theta);
+        targetPosition.x = position.x + 100 * Math.sin(this.phi) * Math.cos(this.theta);
+        targetPosition.y = position.y + 100 * Math.cos(this.phi);
+        targetPosition.z = position.z + 100 * Math.sin(this.phi) * Math.sin(this.theta);
 
-		this.object.lookAt(targetPosition);
-        this.mouseX = 0;
-        this.mouseY = 0;
+        this.object.lookAt(targetPosition);
+
+        if (this.havePointerLock) {
+            this.mouseX = 0;
+            this.mouseY = 0;
+        }
 	};
 
 	function contextmenu(event) {
@@ -231,8 +234,8 @@ THREE.FirstPersonControls = function (object, domElement) {
 	};
 
 	// pointer lock
-    this.havePointerLock = 'pointerLockElement' in document || 'mozPointerLockElement' in document ||
-        'webkitPointerLockElement' in document;
+    this.havePointerLock = ('pointerLockElement' in document || 'mozPointerLockElement' in document ||
+        'webkitPointerLockElement' in document) && CONFIG.CAMERA_POINTER_LOCK;
 
     if (this.havePointerLock) {
         this.domElement.requestPointerLock = this.domElement.requestPointerLock ||
