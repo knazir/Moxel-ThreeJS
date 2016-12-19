@@ -6,44 +6,40 @@
  * modified by knazir / https://www.github.com/knazir/
  */
 FirstPersonControls = function (camera, domElement) {
-	this.object = camera;
-	this.target = new THREE.Vector3(0, 0, 0);
+	this.object             = camera;
+	this.target             = new THREE.Vector3(0, 0, 0);
+	this.domElement         = (domElement !== undefined) ? domElement : document;
+	this.enabled            = true;
 
-	this.domElement = (domElement !== undefined) ? domElement : document;
+	this.movementSpeed      = CONFIG.CAMERA_MOVE_SPEED;
+	this.lookSpeed          = CONFIG.CAMERA_LOOK_SPEED;
+	this.lookVertical       = true;
+	this.autoForward        = false;
+	this.activeLook         = true;
 
-	this.enabled = true;
+	this.heightSpeed        = false;
+	this.heightCoef         = 1.0;
+	this.heightMin          = 0.0;
+	this.heightMax          = 1.0;
 
-	this.movementSpeed = CONFIG.CAMERA_MOVE_SPEED;
-	this.lookSpeed = CONFIG.CAMERA_LOOK_SPEED;
+	this.constrainVertical  = CONFIG.CAMERA_CONSTRAIN_LOOK;
+	this.verticalMin        = 0;
+	this.verticalMax        = Math.PI;
 
-	this.lookVertical = true;
-	this.autoForward = false;
+	this.autoSpeedFactor    = 0.0;
 
-	this.activeLook = true;
+	this.mouseX             = 0;
+	this.mouseY             = 0;
 
-	this.heightSpeed = false;
-	this.heightCoef = 1.0;
-	this.heightMin = 0.0;
-	this.heightMax = 1.0;
+	this.lat                = 0;
+	this.lon                = 0;
+	this.phi                = 0;
+	this.theta              = 0;
 
-	this.constrainVertical = CONFIG.CAMERA_CONSTRAIN_LOOK;
-	this.verticalMin = 0;
-	this.verticalMax = Math.PI;
-
-	this.autoSpeedFactor = 0.0;
-
-	this.mouseX = 0;
-	this.mouseY = 0;
-
-	this.lat = 0;
-	this.lon = 0;
-	this.phi = 0;
-	this.theta = 0;
-
-	this.moveForward = false;
-	this.moveBackward = false;
-	this.moveLeft = false;
-	this.moveRight = false;
+	this.moveForward        = false;
+	this.moveBackward       = false;
+	this.moveLeft           = false;
+	this.moveRight          = false;
 
 	if (this.domElement !== document) {
 		this.domElement.setAttribute('tabindex', - 1);
@@ -59,16 +55,10 @@ FirstPersonControls = function (camera, domElement) {
 
 		if (this.activeLook) {
 			switch (event.button) {
-				case 0:
-				    this.moveForward = true;
-                    break;
-				case 2:
-				    this.moveBackward = true;
-                    break;
+				case 0: this.moveForward = true; break;
+				case 2: this.moveBackward = true; break;
 			}
 		}
-
-		this.mouseDragOn = true;
 	};
 
 	this.onMouseUp = function (event) {
@@ -77,15 +67,10 @@ FirstPersonControls = function (camera, domElement) {
 
 		if (this.activeLook) {
 			switch (event.button) {
-				case 0:
-				    this.moveForward = false;
-                    break;
-				case 2:
-				    this.moveBackward = false;
-                    break;
+				case 0: this.moveForward = false; break;
+				case 2: this.moveBackward = false; break;
 			}
 		}
-		this.mouseDragOn = false;
 	};
 
 	this.onMouseMove = function (event) {
@@ -143,7 +128,7 @@ FirstPersonControls = function (camera, domElement) {
 	}
 
 	// setup pointer lock listeners
-    this.onPointerLockChange = function(event) {
+    this.onPointerLockChange = function() {
         this.hasPointerLock =   document.pointerLockElement === this.domElement     ||
                                 document.mozPointerLockElement === this.domElement  ||
                                 document.webkitPointerLockElement === this.domElement;
@@ -168,7 +153,7 @@ FirstPersonControls = function (camera, domElement) {
         }
     };
 
-    this.onPointerLockError = function(event) {
+    this.onPointerLockError = function() {
         console.log('Error locking pointer. The pointer is most likely not hidden.');
     };
 
