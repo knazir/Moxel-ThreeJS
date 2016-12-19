@@ -9,6 +9,9 @@ function Chunk(scene, width, height, length) {
 
 Chunk.prototype.constructor = Chunk;
 
+/*
+ * Populates the 3D array of blocks with block objects.
+ */
 Chunk.prototype.generateBlocks = function() {
     for (var x = 0; x < this.width; x++) {
         for (var z = 0; z < this.length; z++) {
@@ -44,6 +47,9 @@ Chunk.prototype.generateBlocks = function() {
     }
 };
 
+/*
+ * Add blocks that should be rendered to the chunk's associated scene object.
+ */
 Chunk.prototype.addBlocksToScene = function() {
     for (var x = CONFIG.ORIGIN.X; x < this.width; x++) {
         for (var z = CONFIG.ORIGIN.Z; z < this.length; z++) {
@@ -57,6 +63,9 @@ Chunk.prototype.addBlocksToScene = function() {
     }
 };
 
+/*
+ * Removes all blocks that were (assumed to be) rendered from the chunk's associated scene object.
+ */
 Chunk.prototype.clearBlocksFromScene = function() {
     for (var x = CONFIG.ORIGIN.X; x < this.width; x++) {
         for (var z = CONFIG.ORIGIN.Z; z < this.length; z++) {
@@ -70,6 +79,9 @@ Chunk.prototype.clearBlocksFromScene = function() {
     }
 };
 
+/*
+ * Checks if any neighbors surrounding a given block should now be rendered.
+ */
 Chunk.prototype.rerenderNeighbors = function(x, y, z) {
     for (var i = x - 1; i <= x + 1; i++) {
         for (var j = y - 1; j <= y + 1; j++) {
@@ -83,6 +95,9 @@ Chunk.prototype.rerenderNeighbors = function(x, y, z) {
     }
 };
 
+/*
+ * Removes the specified block from the scene and checks if any of its neighbors should now be rendered.
+ */
 Chunk.prototype.removeBlock = function(x, y, z) {
     var voxelX = Math.trunc(x / CONFIG.CUBE_SIZE),
         voxelY = Math.trunc(y / CONFIG.CUBE_SIZE),

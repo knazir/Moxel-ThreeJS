@@ -127,6 +127,15 @@ function createWorld() {
     };
 
     var setupControls = function () {
+        var mouse = new THREE.Vector2();
+        var mouseLook = function(mouseEvent) {
+            mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+            mouse.y = (event.clientY / window.innerHeight) * 2 + 1;
+
+            console.log('Mouse moved to: (' + mouse.x + ', ' + mouse.y + ')');
+        };
+
+        window.addEventListener('mousemove', mouseLook, false);
         window.addEventListener('keydown', disableKeyScrolling, false);
     };
 
@@ -143,6 +152,7 @@ function createWorld() {
 
     setupControls();
     renderSample();
+    console.log('Renderer:');
     console.log(renderer.info);
 }
 

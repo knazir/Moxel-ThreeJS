@@ -10,7 +10,10 @@ var randomInteger = function(low, high) {
 
 /* * * * *
  * Chunk *
- * * * * */
+ * * * * *
+ *
+ * TODO: Makes these methods instance methods of the Chunk class
+ */
 var create3DArray = function(width, height, length) {
     var blocks = new Array(width);
     for (var i = 0; i < width; i++) {
@@ -64,7 +67,10 @@ var getBlockTypeByHeight = function(currentHeight, actualHeight) {
 
 /* * * * * * * * * * * * * *
  * Perlin Noise Generation *
- * * * * * * * * * * * * * */
+ * * * * * * * * * * * * * *
+ *
+ * TODO: Move noise generation from library to this custom implementation
+ */
 var clamp = function(value) {
     return Math.min(Math.max(value, 0), 1);
 };

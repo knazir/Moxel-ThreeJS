@@ -51,3 +51,4 @@ CameraControls.prototype.update = function() {
         this.camera.rotateOnAxis(new THREE.Vector3(0, 1, 0), -rotateAngle);
     }
 };
+

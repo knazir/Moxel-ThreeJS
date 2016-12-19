@@ -1,5 +1,5 @@
 /**
- * Cube wrapper class instantiator
+ * Cube wrapper class (Block) instantiator
  */
 function BlockFactory() {
     this.textureFactory = new TextureFactory();
