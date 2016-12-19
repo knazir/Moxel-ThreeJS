@@ -129,8 +129,8 @@ function createWorld() {
     var setupControls = function () {
         var mouse = new THREE.Vector2();
         var mouseLook = function(mouseEvent) {
-            mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-            mouse.y = (event.clientY / window.innerHeight) * 2 + 1;
+            mouse.x = (mouseEvent.clientX / window.innerWidth) * 2 - 1;
+            mouse.y = (mouseEvent.clientY / window.innerHeight) * 2 + 1;
 
             console.log('Mouse moved to: (' + mouse.x + ', ' + mouse.y + ')');
         };
