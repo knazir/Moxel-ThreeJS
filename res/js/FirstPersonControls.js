@@ -5,7 +5,7 @@
  *
  * modified by knazir / https://www.github.com/knazir
  */
-THREE.FirstPersonControls = function (object, domElement) {
+FirstPersonControls = function (object, domElement) {
 	this.object = object;
 	this.target = new THREE.Vector3(0, 0, 0);
 
@@ -56,11 +56,11 @@ THREE.FirstPersonControls = function (object, domElement) {
 
 	this.handleResize = function () {
 		if (this.domElement === document) {
-			this.viewHalfX = window.innerWidth / 2;
-			this.viewHalfY = window.innerHeight / 2;
+			this.viewHalfX = window.innerWidth/2;
+			this.viewHalfY = window.innerHeight/2;
 		} else {
-			this.viewHalfX = this.domElement.offsetWidth / 2;
-			this.viewHalfY = this.domElement.offsetHeight / 2;
+			this.viewHalfX = this.domElement.offsetWidth/2;
+			this.viewHalfY = this.domElement.offsetHeight/2;
 		}
 	};
 
@@ -74,8 +74,12 @@ THREE.FirstPersonControls = function (object, domElement) {
 
 		if (this.activeLook) {
 			switch (event.button) {
-				case 0: this.moveForward = true; break;
-				case 2: this.moveBackward = true; break;
+				case 0:
+				    this.moveForward = true;
+                    break;
+				case 2:
+				    this.moveBackward = true;
+                    break;
 			}
 		}
 
@@ -88,21 +92,36 @@ THREE.FirstPersonControls = function (object, domElement) {
 
 		if (this.activeLook) {
 			switch (event.button) {
-				case 0: this.moveForward = false; break;
-				case 2: this.moveBackward = false; break;
+				case 0:
+				    this.moveForward = false;
+                    break;
+				case 2:
+				    this.moveBackward = false;
+                    break;
 			}
 		}
 		this.mouseDragOn = false;
 	};
 
 	this.onMouseMove = function (event) {
-		if (this.domElement === document) {
-			this.mouseX = event.pageX - this.viewHalfX;
-			this.mouseY = event.pageY - this.viewHalfY;
-		} else {
-			this.mouseX = event.pageX - this.domElement.offsetLeft - this.viewHalfX;
-			this.mouseY = event.pageY - this.domElement.offsetTop - this.viewHalfY;
-		}
+	    if (this.hasPointerLock) {
+            this.mouseX = event.movementX   ||
+                    event.mozMovementX      ||
+                    event.webkitMovementX   ||
+                    0;
+            this.mouseY = event.movementY   ||
+                    event.mozMovementY      ||
+                    event.webkitMovementY   ||
+                    0;
+        } else {
+            if (this.domElement === document) {
+                this.mouseX = event.pageX - this.viewHalfX;
+                this.mouseY = event.pageY - this.viewHalfY;
+            } else {
+                this.mouseX = event.pageX - this.domElement.offsetLeft - this.viewHalfX;
+                this.mouseY = event.pageY - this.domElement.offsetTop - this.viewHalfY;
+            }
+        }
 	};
 
 	this.onKeyDown = function (event) {
@@ -202,7 +221,7 @@ THREE.FirstPersonControls = function (object, domElement) {
 
         this.object.lookAt(targetPosition);
 
-        if (this.havePointerLock) {
+        if (this.hasPointerLock) {
             this.mouseX = 0;
             this.mouseY = 0;
         }
@@ -218,7 +237,7 @@ THREE.FirstPersonControls = function (object, domElement) {
         this.domElement.removeEventListener('mousemove', _onMouseMove, false);
         this.domElement.removeEventListener('mouseup', _onMouseUp, false);
 
-        if (this.havePointerLock) {
+        if (this.hasPointerLock) {
             // Ask the browser to release the pointer
             document.exitPointerLock = document.exitPointerLock || document.mozExitPointerLock ||
                 document.webkitExitPointerLock;
@@ -233,51 +252,61 @@ THREE.FirstPersonControls = function (object, domElement) {
 		window.removeEventListener('keyup', _onKeyUp, false);
 	};
 
-	// pointer lock
-    this.havePointerLock = ('pointerLockElement' in document || 'mozPointerLockElement' in document ||
-        'webkitPointerLockElement' in document) && CONFIG.CAMERA_POINTER_LOCK;
+	// setup pointer lock listeners
+    this.onPointerLockChange = function(event) {
+        console.log('pointer lock changing!');
 
-    if (this.havePointerLock) {
-        this.domElement.requestPointerLock = this.domElement.requestPointerLock ||
-            this.domElement.mozRequestPointerLock || this.domElement.webkitRequestPointerLock;
+        this.hasPointerLock =   document.pointerLockElement === this.domElement     ||
+                                document.mozPointerLockElement === this.domElement  ||
+                                document.webkitPointerLockElement === this.domElement;
+        this.lookSpeed = this.hasPointerLock ? CONFIG.CAMERA_LOCK_LOOK_SPEED : CONFIG.CAMERA_LOOK_SPEED;
 
-        // Ask the browser to lock the pointer
-        this.domElement.requestPointerLock();
+        console.log('pointer lock set to: ' + this.hasPointerLock);
+    };
 
-        this.onPointerLockChange = function(event) {
-            if (document.pointerLockElement === this.domElement ||
-                document.mozPointerLockElement === this.domElement ||
-                document.webkitPointerLockElement === this.domElement) {
-                // Pointer was just locked, enable the mousemove listener
-                this.domElement.addEventListener("mousemove", _onMouseMove, false);
-            } else {
-                // Pointer was just unlocked, disable the mousemove listener
-                this.domElement.removeEventListener("mousemove", _onMouseMove, false);
-                this.unlockHook(this.domElement);
-            }
-        };
+    this.onPointerLockError = function(event) {
+        console.log('Error locking pointer. The pointer is most likely not hidden.');
+    };
 
-        this.onPointerLockError = function(event) {
-            console.log('Error locking pointer. The pointer is most likely not hidden.');
-        };
+	this.updatePointerLock = function() {
+        this.pointerLockPossible =  'pointerLockElement' in document        ||
+                                    'mozPointerLockElement' in document     ||
+                                    'webkitPointerLockElement' in document;
 
-        var _onPointerLockChange    = bind(this, this.onPointerLockChange),
-            _onPointerLockError     = bind(this, this.onPointerLockError);
+        // only allow pointer lock if specified in settings
+        this.hasPointerLock =  this.pointerLockPossible && CONFIG.CAMERA_POINTER_LOCK;
 
-        document.addEventListener('pointerlockchange', _onPointerLockChange, false);
-        document.addEventListener('mozpointerlockchange', _onPointerLockChange, false);
-        document.addEventListener('webkitpointerlockchange', _onPointerLockChange, false);
-        document.addEventListener('pointerlockerror', _onPointerLockError, false);
-        document.addEventListener('mozpointerlockerror', _onPointerLockError, false);
-        document.addEventListener('webkitpointerlockerror', _onPointerLockError, false);
-    }
+        if (this.pointerLockPossible && CONFIG.CAMERA_POINTER_LOCK) {
+            console.log('Requesting pointer lock...');
+            this.domElement.requestPointerLock =    this.domElement.requestPointerLock      ||
+                                                    this.domElement.mozRequestPointerLock   ||
+                                                    this.domElement.webkitRequestPointerLock;
+            this.domElement.requestPointerLock();
+        } else if (this.pointerLockPossible && !CONFIG.CAMERA_POINTER_LOCK) {
+            console.log('Exiting pointer lock...');
+            document.exitPointerLock =  document.exitPointerLock        ||
+                                        document.mozExitPointerLock     ||
+                                        document.webkitExitPointerLock;
+            document.exitPointerLock();
+        }
+    };
 
-    // other event listeners
+    this.updatePointerLock();
+
 	var _onMouseMove            = bind(this, this.onMouseMove),
 	    _onMouseDown            = bind(this, this.onMouseDown),
         _onMouseUp              = bind(this, this.onMouseUp),
         _onKeyDown              = bind(this, this.onKeyDown),
-	    _onKeyUp                = bind(this, this.onKeyUp);
+	    _onKeyUp                = bind(this, this.onKeyUp),
+        _onPointerLockChange    = bind(this, this.onPointerLockChange),
+        _onPointerLockError     = bind(this, this.onPointerLockError);
+
+    document.addEventListener('pointerlockchange', _onPointerLockChange, false);
+    document.addEventListener('mozpointerlockchange', _onPointerLockChange, false);
+    document.addEventListener('webkitpointerlockchange', _onPointerLockChange, false);
+    document.addEventListener('pointerlockerror', _onPointerLockError, false);
+    document.addEventListener('mozpointerlockerror', _onPointerLockError, false);
+    document.addEventListener('webkitpointerlockerror', _onPointerLockError, false);
 
     this.domElement.addEventListener('contextmenu', contextmenu, false);
 	this.domElement.addEventListener('mousemove', _onMouseMove, false);
@@ -295,3 +324,5 @@ THREE.FirstPersonControls = function (object, domElement) {
 	this.handleResize();
 
 };
+
+FirstPersonControls.prototype.constructor = FirstPersonControls;

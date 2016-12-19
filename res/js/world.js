@@ -119,8 +119,37 @@ function createWorld() {
         renderSample();
     };
 
+    var disableKeyScrolling = function(keyEvent) {
+        switch (keyEvent.keyCode) {
+            case 37:
+            case 39:
+            case 38:
+            case 40: // Arrow keys
+            case 32: // Space
+                keyEvent.preventDefault();
+                break;
+            default:
+                break;
+        }
+    };
+
+    /*
+     * Allows settings to be changed through keyboard input.
+     * This method is dependent on the controls object being in its closure.
+     */
+    var changeSettings = function(keyEvent) {
+        switch (keyEvent.keyCode) {
+            case 67: // c
+                controls.toggleCameraPointerLock();
+                break;
+            default:
+                break;
+        }
+    };
+
     var setupControls = function () {
-        controls.setup();
+        window.addEventListener('keydown', disableKeyScrolling, false);
+        window.addEventListener('keydown', changeSettings, false);
     };
 
     var renderSample = function () {

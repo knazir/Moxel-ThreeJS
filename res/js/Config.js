@@ -1,4 +1,4 @@
-CONFIG = Object.freeze({
+CONFIG = {
     CUBE_SIZE:              10,
     ORIGIN:                 {X: 0, Y: 0, Z: 0},
     BLOCK_TEXTURE_DIR:      'res/textures/blocks/',
@@ -24,6 +24,7 @@ CONFIG = Object.freeze({
     CAMERA_INITIAL_Z:       220,
     CAMERA_MOVE_SPEED:      100.0,
     CAMERA_LOOK_SPEED:      0.5,
+    CAMERA_LOCK_LOOK_SPEED: 10.0,
     CAMERA_POINTER_LOCK:    true,
 
     RENDERER_WIDTH:         window.innerWidth,
@@ -42,7 +43,7 @@ CONFIG = Object.freeze({
     NOISE_AMPLITUDE:        1.0,
     NOISE_PERSISTENCE:      0.45,
     NOISE_FACTOR:           0.05
-});
+};
 
 BLOCK_TYPES = Object.freeze({
     // Name -> Code
