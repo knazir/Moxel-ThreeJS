@@ -2,8 +2,9 @@
  * @author mrdoob / http://mrdoob.com/
  * @author alteredq / http://alteredqualia.com/
  * @author paulirish / http://paulirish.com/
+ *
+ * modified by knazir / https://www.github.com/knazir
  */
-
 THREE.FirstPersonControls = function (object, domElement) {
 	this.object = object;
 	this.target = new THREE.Vector3(0, 0, 0);
@@ -162,15 +163,15 @@ THREE.FirstPersonControls = function (object, domElement) {
 		if (this.moveForward || (this.autoForward && ! this.moveBackward)) this.object.translateZ(- (actualMoveSpeed + this.autoSpeedFactor));
 		if (this.moveBackward) this.object.translateZ(actualMoveSpeed);
 
-		if (this.moveLeft) this.object.translateX(- actualMoveSpeed);
+		if (this.moveLeft) this.object.translateX(-actualMoveSpeed);
 		if (this.moveRight) this.object.translateX(actualMoveSpeed);
 
 		if (this.moveUp) this.object.translateY(actualMoveSpeed);
-		if (this.moveDown) this.object.translateY(- actualMoveSpeed);
+		if (this.moveDown) this.object.translateY(-actualMoveSpeed);
 
 		var actualLookSpeed = delta * this.lookSpeed;
 
-		if (! this.activeLook) {
+		if (!this.activeLook) {
 			actualLookSpeed = 0;
 		}
 
@@ -183,7 +184,7 @@ THREE.FirstPersonControls = function (object, domElement) {
 		this.lon += this.mouseX * actualLookSpeed;
 		if (this.lookVertical) this.lat -= this.mouseY * actualLookSpeed * verticalLookRatio;
 
-		this.lat = Math.max(- 85, Math.min(85, this.lat));
+		this.lat = Math.max(-85, Math.min(85, this.lat));
 		this.phi = THREE.Math.degToRad(90 - this.lat);
 
 		this.theta = THREE.Math.degToRad(this.lon);
@@ -200,6 +201,8 @@ THREE.FirstPersonControls = function (object, domElement) {
 		targetPosition.z = position.z + 100 * Math.sin(this.phi) * Math.sin(this.theta);
 
 		this.object.lookAt(targetPosition);
+        this.mouseX = 0;
+        this.mouseY = 0;
 	};
 
 	function contextmenu(event) {
@@ -207,22 +210,73 @@ THREE.FirstPersonControls = function (object, domElement) {
 	}
 
 	this.dispose = function() {
-		this.domElement.removeEventListener('contextmenu', contextmenu, false);
-		this.domElement.removeEventListener('mousedown', _onMouseDown, false);
-		this.domElement.removeEventListener('mousemove', _onMouseMove, false);
-		this.domElement.removeEventListener('mouseup', _onMouseUp, false);
+        this.domElement.removeEventListener('contextmenu', contextmenu, false);
+        this.domElement.removeEventListener('mousedown', _onMouseDown, false);
+        this.domElement.removeEventListener('mousemove', _onMouseMove, false);
+        this.domElement.removeEventListener('mouseup', _onMouseUp, false);
+
+        if (this.havePointerLock) {
+            // Ask the browser to release the pointer
+            document.exitPointerLock = document.exitPointerLock || document.mozExitPointerLock ||
+                document.webkitExitPointerLock;
+            document.exitPointerLock();
+
+            document.removeEventListener('pointerlockchange', _onPointerLockChange, false);
+            document.removeEventListener('mozpointerlockchange', _onPointerLockChange, false);
+            document.removeEventListener('webkitpointerlockchange', _onPointerLockChange, false);
+        }
 
 		window.removeEventListener('keydown', _onKeyDown, false);
 		window.removeEventListener('keyup', _onKeyUp, false);
 	};
 
-	var _onMouseMove = bind(this, this.onMouseMove);
-	var _onMouseDown = bind(this, this.onMouseDown);
-	var _onMouseUp = bind(this, this.onMouseUp);
-	var _onKeyDown = bind(this, this.onKeyDown);
-	var _onKeyUp = bind(this, this.onKeyUp);
+	// pointer lock
+    this.havePointerLock = 'pointerLockElement' in document || 'mozPointerLockElement' in document ||
+        'webkitPointerLockElement' in document;
 
-	this.domElement.addEventListener('contextmenu', contextmenu, false);
+    if (this.havePointerLock) {
+        this.domElement.requestPointerLock = this.domElement.requestPointerLock ||
+            this.domElement.mozRequestPointerLock || this.domElement.webkitRequestPointerLock;
+
+        // Ask the browser to lock the pointer
+        this.domElement.requestPointerLock();
+
+        this.onPointerLockChange = function(event) {
+            if (document.pointerLockElement === this.domElement ||
+                document.mozPointerLockElement === this.domElement ||
+                document.webkitPointerLockElement === this.domElement) {
+                // Pointer was just locked, enable the mousemove listener
+                this.domElement.addEventListener("mousemove", _onMouseMove, false);
+            } else {
+                // Pointer was just unlocked, disable the mousemove listener
+                this.domElement.removeEventListener("mousemove", _onMouseMove, false);
+                this.unlockHook(this.domElement);
+            }
+        };
+
+        this.onPointerLockError = function(event) {
+            console.log('Error locking pointer. The pointer is most likely not hidden.');
+        };
+
+        var _onPointerLockChange    = bind(this, this.onPointerLockChange),
+            _onPointerLockError     = bind(this, this.onPointerLockError);
+
+        document.addEventListener('pointerlockchange', _onPointerLockChange, false);
+        document.addEventListener('mozpointerlockchange', _onPointerLockChange, false);
+        document.addEventListener('webkitpointerlockchange', _onPointerLockChange, false);
+        document.addEventListener('pointerlockerror', _onPointerLockError, false);
+        document.addEventListener('mozpointerlockerror', _onPointerLockError, false);
+        document.addEventListener('webkitpointerlockerror', _onPointerLockError, false);
+    }
+
+    // other event listeners
+	var _onMouseMove            = bind(this, this.onMouseMove),
+	    _onMouseDown            = bind(this, this.onMouseDown),
+        _onMouseUp              = bind(this, this.onMouseUp),
+        _onKeyDown              = bind(this, this.onKeyDown),
+	    _onKeyUp                = bind(this, this.onKeyUp);
+
+    this.domElement.addEventListener('contextmenu', contextmenu, false);
 	this.domElement.addEventListener('mousemove', _onMouseMove, false);
 	this.domElement.addEventListener('mousedown', _onMouseDown, false);
 	this.domElement.addEventListener('mouseup', _onMouseUp, false);
