@@ -3,6 +3,7 @@ CONFIG = {
     ORIGIN:                 {X: 0, Y: 0, Z: 0},
     BLOCK_TEXTURE_DIR:      'res/textures/blocks/',
     NEIGHBORS_TO_CULL:      27,
+    OVERLAY_ID:             '#overlay',
 
     CHUNK_WIDTH:            20,
     CHUNK_HEIGHT:           20,
@@ -23,9 +24,8 @@ CONFIG = {
     CAMERA_INITIAL_Y:       20,
     CAMERA_INITIAL_Z:       220,
     CAMERA_MOVE_SPEED:      100.0,
-    CAMERA_LOOK_SPEED:      0.5,
-    CAMERA_LOCK_LOOK_SPEED: 10.0,
-    CAMERA_POINTER_LOCK:    true,
+    CAMERA_LOOK_SPEED:      10.0,
+    CAMERA_CONSTRAIN_LOOK:  true,
 
     RENDERER_WIDTH:         window.innerWidth,
     RENDERER_HEIGHT:        window.innerHeight,

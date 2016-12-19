@@ -135,21 +135,24 @@ function createWorld() {
 
     /*
      * Allows settings to be changed through keyboard input.
-     * This method is dependent on the controls object being in its closure.
+     * This method is dependent on engine components being in its closure.
+     * TODO: IMPLEMENT THIS
      */
     var changeSettings = function(keyEvent) {
         switch (keyEvent.keyCode) {
-            case 67: // c
-                controls.toggleCameraPointerLock();
-                break;
             default:
                 break;
         }
     };
 
+    var toggleOverlay = function(event) {
+        controls.toggleCameraPointerLock();
+    };
+
     var setupControls = function () {
         window.addEventListener('keydown', disableKeyScrolling, false);
         window.addEventListener('keydown', changeSettings, false);
+        document.querySelector(CONFIG.OVERLAY_ID).addEventListener('click', toggleOverlay);
     };
 
     var renderSample = function () {

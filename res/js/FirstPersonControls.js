@@ -5,8 +5,8 @@
  *
  * modified by knazir / https://www.github.com/knazir
  */
-FirstPersonControls = function (object, domElement) {
-	this.object = object;
+FirstPersonControls = function (camera, domElement) {
+	this.object = camera;
 	this.target = new THREE.Vector3(0, 0, 0);
 
 	this.domElement = (domElement !== undefined) ? domElement : document;
@@ -26,7 +26,7 @@ FirstPersonControls = function (object, domElement) {
 	this.heightMin = 0.0;
 	this.heightMax = 1.0;
 
-	this.constrainVertical = false;
+	this.constrainVertical = CONFIG.CAMERA_CONSTRAIN_LOOK;
 	this.verticalMin = 0;
 	this.verticalMax = Math.PI;
 
@@ -44,11 +44,6 @@ FirstPersonControls = function (object, domElement) {
 	this.moveBackward = false;
 	this.moveLeft = false;
 	this.moveRight = false;
-
-	this.mouseDragOn = false;
-
-	this.viewHalfX = 0;
-	this.viewHalfY = 0;
 
 	if (this.domElement !== document) {
 		this.domElement.setAttribute('tabindex', - 1);
@@ -104,24 +99,14 @@ FirstPersonControls = function (object, domElement) {
 	};
 
 	this.onMouseMove = function (event) {
-	    if (this.hasPointerLock) {
-            this.mouseX = event.movementX   ||
-                    event.mozMovementX      ||
-                    event.webkitMovementX   ||
-                    0;
-            this.mouseY = event.movementY   ||
-                    event.mozMovementY      ||
-                    event.webkitMovementY   ||
-                    0;
-        } else {
-            if (this.domElement === document) {
-                this.mouseX = event.pageX - this.viewHalfX;
-                this.mouseY = event.pageY - this.viewHalfY;
-            } else {
-                this.mouseX = event.pageX - this.domElement.offsetLeft - this.viewHalfX;
-                this.mouseY = event.pageY - this.domElement.offsetTop - this.viewHalfY;
-            }
-        }
+        this.mouseX = event.movementX   ||
+                event.mozMovementX      ||
+                event.webkitMovementX   ||
+                0;
+        this.mouseY = event.movementY   ||
+                event.mozMovementY      ||
+                event.webkitMovementY   ||
+                0;
 	};
 
 	this.onKeyDown = function (event) {
@@ -254,14 +239,28 @@ FirstPersonControls = function (object, domElement) {
 
 	// setup pointer lock listeners
     this.onPointerLockChange = function(event) {
-        console.log('pointer lock changing!');
-
         this.hasPointerLock =   document.pointerLockElement === this.domElement     ||
                                 document.mozPointerLockElement === this.domElement  ||
                                 document.webkitPointerLockElement === this.domElement;
-        this.lookSpeed = this.hasPointerLock ? CONFIG.CAMERA_LOCK_LOOK_SPEED : CONFIG.CAMERA_LOOK_SPEED;
 
-        console.log('pointer lock set to: ' + this.hasPointerLock);
+        var overlay = document.querySelector(CONFIG.OVERLAY_ID);
+        if (this.hasPointerLock) {
+            overlay.style.display = 'none';
+
+            this.domElement.addEventListener('mousemove', _onMouseMove, false);
+            this.domElement.addEventListener('mousedown', _onMouseDown, false);
+            this.domElement.addEventListener('mouseup', _onMouseUp, false);
+            window.addEventListener('keydown', _onKeyDown, false);
+            window.addEventListener('keyup', _onKeyUp, false);
+        } else {
+            overlay.style.display = 'flex';
+
+            this.domElement.removeEventListener('mousemove', _onMouseMove, false);
+            this.domElement.removeEventListener('mousedown', _onMouseDown, false);
+            this.domElement.removeEventListener('mouseup', _onMouseUp, false);
+            window.removeEventListener('keydown', _onKeyDown, false);
+            window.removeEventListener('keyup', _onKeyUp, false);
+        }
     };
 
     this.onPointerLockError = function(event) {
@@ -269,29 +268,17 @@ FirstPersonControls = function (object, domElement) {
     };
 
 	this.updatePointerLock = function() {
-        this.pointerLockPossible =  'pointerLockElement' in document        ||
-                                    'mozPointerLockElement' in document     ||
-                                    'webkitPointerLockElement' in document;
+        this.hasPointerLock =   'pointerLockElement' in document        ||
+                                'mozPointerLockElement' in document     ||
+                                'webkitPointerLockElement' in document;
 
-        // only allow pointer lock if specified in settings
-        this.hasPointerLock =  this.pointerLockPossible && CONFIG.CAMERA_POINTER_LOCK;
-
-        if (this.pointerLockPossible && CONFIG.CAMERA_POINTER_LOCK) {
-            console.log('Requesting pointer lock...');
+        if (this.hasPointerLock) {
             this.domElement.requestPointerLock =    this.domElement.requestPointerLock      ||
                                                     this.domElement.mozRequestPointerLock   ||
                                                     this.domElement.webkitRequestPointerLock;
             this.domElement.requestPointerLock();
-        } else if (this.pointerLockPossible && !CONFIG.CAMERA_POINTER_LOCK) {
-            console.log('Exiting pointer lock...');
-            document.exitPointerLock =  document.exitPointerLock        ||
-                                        document.mozExitPointerLock     ||
-                                        document.webkitExitPointerLock;
-            document.exitPointerLock();
         }
     };
-
-    this.updatePointerLock();
 
 	var _onMouseMove            = bind(this, this.onMouseMove),
 	    _onMouseDown            = bind(this, this.onMouseDown),
@@ -301,6 +288,7 @@ FirstPersonControls = function (object, domElement) {
         _onPointerLockChange    = bind(this, this.onPointerLockChange),
         _onPointerLockError     = bind(this, this.onPointerLockError);
 
+    // Just handle pointer lock listeners here, we can add others on pointer lock change
     document.addEventListener('pointerlockchange', _onPointerLockChange, false);
     document.addEventListener('mozpointerlockchange', _onPointerLockChange, false);
     document.addEventListener('webkitpointerlockchange', _onPointerLockChange, false);
@@ -308,21 +296,12 @@ FirstPersonControls = function (object, domElement) {
     document.addEventListener('mozpointerlockerror', _onPointerLockError, false);
     document.addEventListener('webkitpointerlockerror', _onPointerLockError, false);
 
-    this.domElement.addEventListener('contextmenu', contextmenu, false);
-	this.domElement.addEventListener('mousemove', _onMouseMove, false);
-	this.domElement.addEventListener('mousedown', _onMouseDown, false);
-	this.domElement.addEventListener('mouseup', _onMouseUp, false);
-
-	window.addEventListener('keydown', _onKeyDown, false);
-	window.addEventListener('keyup', _onKeyUp, false);
-
 	function bind(scope, fn) {
 		return function () {
 			fn.apply(scope, arguments);
 		};
 	}
 	this.handleResize();
-
 };
 
 FirstPersonControls.prototype.constructor = FirstPersonControls;

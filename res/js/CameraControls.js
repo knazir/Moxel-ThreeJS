@@ -12,6 +12,5 @@ CameraControls.prototype.update = function() {
 };
 
 CameraControls.prototype.toggleCameraPointerLock = function() {
-    CONFIG.CAMERA_POINTER_LOCK = !CONFIG.CAMERA_POINTER_LOCK;
     this.controls.updatePointerLock();
 };
