@@ -3,8 +3,8 @@ function createWorld() {
     /* * * * * * * * * * * *
      * Component Functions *
      * * * * * * * * * * * */
-    var createScene = function () {
-        return new THREE.Scene();
+    var createClock = function() {
+        return new THREE.Clock();
     };
 
     var createLight = function () {
@@ -13,9 +13,13 @@ function createWorld() {
         return light;
     };
 
+    var createScene = function () {
+        return new THREE.Scene();
+    };
+
     var createCamera = function () {
-        var camera = new THREE.PerspectiveCamera(CONFIG.CAMERA_FOV, CONFIG.CAMERA_ASPECT_RATIO, CONFIG.CAMERA_NEAR_PLANE,
-            CONFIG.CAMERA_FAR_PLANE);
+        var camera = new THREE.PerspectiveCamera(CONFIG.CAMERA_FOV, CONFIG.CAMERA_ASPECT_RATIO,
+            CONFIG.CAMERA_NEAR_PLANE, CONFIG.CAMERA_FAR_PLANE);
         camera.position.set(CONFIG.CAMERA_INITIAL_X, CONFIG.CAMERA_INITIAL_Y, CONFIG.CAMERA_INITIAL_Z);
         return camera;
     };
@@ -32,14 +36,18 @@ function createWorld() {
         return renderer;
     };
 
-    var createChunk = function() {
+    var createChunk = function(scene) {
         var chunk = new Chunk(scene, CONFIG.CHUNK_WIDTH, CONFIG.CHUNK_HEIGHT, CONFIG.CHUNK_LENGTH);
         chunk.generateBlocks();
         return chunk;
     };
 
-    var createCameraControls = function () {
-        return new CameraControls(camera, new THREEx.KeyboardState(), new THREE.Clock());
+    var createKeyboardControls = function (camera, clock) {
+        return new CameraControls(camera, new THREEx.KeyboardState(), clock);
+    };
+
+    var createMouseControls = function(camera, renderer) {
+        return new THREE.FirstPersonControls(camera, renderer.domElement);
     };
 
     var createSkybox = function() {
@@ -52,7 +60,7 @@ function createWorld() {
 
         skyBox.material.fog = false;
         skyBox.position.set(CONFIG.SKYBOX_ORIGIN.X, CONFIG.SKYBOX_ORIGIN.Y, CONFIG.SKYBOX_ORIGIN.Z);
-        skyBox.rotation.x = Math.PI / 4;
+        skyBox.rotation.x = Math.PI/4;
         return skyBox;
     };
 
@@ -68,7 +76,8 @@ function createWorld() {
 
     var draw = function () {
         window.requestAnimationFrame(function () {
-            controls.update();
+            mouseControls.update(clock.getDelta());
+            //keyControls.update();
             if (CONFIG.LIGHT_FOLLOW_CAMERA) {
                 light.position.set(camera.position.x, camera.position.y, camera.position.z);
                 light.rotation.set(camera.rotation.x, camera.rotation.y, camera.rotation.z);
@@ -82,23 +91,27 @@ function createWorld() {
     /* * * * * * * * * * *
      * Engine Components *
      * * * * * * * * * * */
-    var light       = createLight(),
-        camera      = createCamera(),
-        scene       = createScene(),
-        renderer    = createRenderer(),
-        chunk       = createChunk(),
-        controls    = createCameraControls();
+    var clock           = createClock(),
+        light           = createLight(),
+        camera          = createCamera(),
+        scene           = createScene(),
+        renderer        = createRenderer(),
+        chunk           = createChunk(scene),
+        //keyControls     = createKeyboardControls(camera, clock),
+        mouseControls   = createMouseControls(camera, scene);
 
 
     /* * * * * * * *
      * Scene Setup *
      * * * * * * * */
     var resetElements = function () {
-        light = createLight();
-        camera = createCamera();
-        scene = createScene(light, camera);
-        renderer = createRenderer();
-        controls = createCameraControls();
+        clock           = createClock();
+        light           = createLight();
+        camera          = createCamera();
+        scene           = createScene(light, camera);
+        renderer        = createRenderer();
+        //keyControls     = createKeyboardControls(camera, clock);
+        mouseControls   = createMouseControls(camera, scene);
     };
 
     var setBackground = function () {
@@ -127,15 +140,6 @@ function createWorld() {
     };
 
     var setupControls = function () {
-        var mouse = new THREE.Vector2();
-        var mouseLook = function(mouseEvent) {
-            mouse.x = (mouseEvent.clientX / window.innerWidth) * 2 - 1;
-            mouse.y = (mouseEvent.clientY / window.innerHeight) * 2 + 1;
-
-            console.log('Mouse moved to: (' + mouse.x + ', ' + mouse.y + ')');
-        };
-
-        window.addEventListener('mousemove', mouseLook, false);
         window.addEventListener('keydown', disableKeyScrolling, false);
     };
 

@@ -23,6 +23,7 @@ CONFIG = Object.freeze({
     CAMERA_INITIAL_Y:       20,
     CAMERA_INITIAL_Z:       220,
     CAMERA_MOVE_SPEED:      2,
+    CAMERA_LOOK_SPEED:      0.5,
 
     RENDERER_WIDTH:         window.innerWidth,
     RENDERER_HEIGHT:        window.innerHeight,

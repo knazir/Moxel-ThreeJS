@@ -1,3 +1,6 @@
+/*
+ * TODO: Make this a generic control wrapper around FirstPersonControls
+ */
 function CameraControls(camera, keyboard, clock) {
     this.camera = camera;
     this.keyboard = keyboard;
