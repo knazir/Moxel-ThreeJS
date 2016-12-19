@@ -3,7 +3,7 @@
  * @author alteredq / http://alteredqualia.com/
  * @author paulirish / http://paulirish.com/
  *
- * modified by knazir / https://www.github.com/knazir
+ * modified by knazir / https://www.github.com/knazir/
  */
 FirstPersonControls = function (camera, domElement) {
 	this.object = camera;
@@ -48,16 +48,6 @@ FirstPersonControls = function (camera, domElement) {
 	if (this.domElement !== document) {
 		this.domElement.setAttribute('tabindex', - 1);
 	}
-
-	this.handleResize = function () {
-		if (this.domElement === document) {
-			this.viewHalfX = window.innerWidth/2;
-			this.viewHalfY = window.innerHeight/2;
-		} else {
-			this.viewHalfX = this.domElement.offsetWidth/2;
-			this.viewHalfY = this.domElement.offsetHeight/2;
-		}
-	};
 
 	this.onMouseDown = function (event) {
 		if (this.domElement !== document) {
@@ -148,94 +138,9 @@ FirstPersonControls = function (camera, domElement) {
 		}
 	};
 
-	this.update = function(delta) {
-        if (!this.enabled) {
-            return;
-        }
-
-        if (this.heightSpeed) {
-            var y = THREE.Math.clamp(this.object.position.y, this.heightMin, this.heightMax);
-            var heightDelta = y - this.heightMin;
-
-            this.autoSpeedFactor = delta * (heightDelta * this.heightCoef);
-        } else {
-            this.autoSpeedFactor = 0.0;
-        }
-
-        var actualMoveSpeed = delta * this.movementSpeed;
-
-        if (this.moveForward || (this.autoForward && !this.moveBackward)) this.object.translateZ(-(actualMoveSpeed + this.autoSpeedFactor));
-        if (this.moveBackward) this.object.translateZ(actualMoveSpeed);
-
-        if (this.moveLeft) this.object.translateX(-actualMoveSpeed);
-        if (this.moveRight) this.object.translateX(actualMoveSpeed);
-
-        if (this.moveUp) this.object.translateY(actualMoveSpeed);
-        if (this.moveDown) this.object.translateY(-actualMoveSpeed);
-
-        var actualLookSpeed = delta * this.lookSpeed;
-
-        if (!this.activeLook) {
-            actualLookSpeed = 0;
-        }
-
-        var verticalLookRatio = 1;
-
-        if (this.constrainVertical) {
-            verticalLookRatio = Math.PI / (this.verticalMax - this.verticalMin);
-        }
-
-        this.lon += this.mouseX * actualLookSpeed;
-        if (this.lookVertical) this.lat -= this.mouseY * actualLookSpeed * verticalLookRatio;
-
-        this.lat = Math.max(-85, Math.min(85, this.lat));
-        this.phi = THREE.Math.degToRad(90 - this.lat);
-
-        this.theta = THREE.Math.degToRad(this.lon);
-
-        if (this.constrainVertical) {
-            this.phi = THREE.Math.mapLinear(this.phi, 0, Math.PI, this.verticalMin, this.verticalMax);
-        }
-
-        var targetPosition = this.target,
-            position = this.object.position;
-
-        targetPosition.x = position.x + 100 * Math.sin(this.phi) * Math.cos(this.theta);
-        targetPosition.y = position.y + 100 * Math.cos(this.phi);
-        targetPosition.z = position.z + 100 * Math.sin(this.phi) * Math.sin(this.theta);
-
-        this.object.lookAt(targetPosition);
-
-        if (this.hasPointerLock) {
-            this.mouseX = 0;
-            this.mouseY = 0;
-        }
-	};
-
 	function contextmenu(event) {
 		event.preventDefault();
 	}
-
-	this.dispose = function() {
-        this.domElement.removeEventListener('contextmenu', contextmenu, false);
-        this.domElement.removeEventListener('mousedown', _onMouseDown, false);
-        this.domElement.removeEventListener('mousemove', _onMouseMove, false);
-        this.domElement.removeEventListener('mouseup', _onMouseUp, false);
-
-        if (this.hasPointerLock) {
-            // Ask the browser to release the pointer
-            document.exitPointerLock = document.exitPointerLock || document.mozExitPointerLock ||
-                document.webkitExitPointerLock;
-            document.exitPointerLock();
-
-            document.removeEventListener('pointerlockchange', _onPointerLockChange, false);
-            document.removeEventListener('mozpointerlockchange', _onPointerLockChange, false);
-            document.removeEventListener('webkitpointerlockchange', _onPointerLockChange, false);
-        }
-
-		window.removeEventListener('keydown', _onKeyDown, false);
-		window.removeEventListener('keyup', _onKeyUp, false);
-	};
 
 	// setup pointer lock listeners
     this.onPointerLockChange = function(event) {
@@ -267,19 +172,6 @@ FirstPersonControls = function (camera, domElement) {
         console.log('Error locking pointer. The pointer is most likely not hidden.');
     };
 
-	this.updatePointerLock = function() {
-        this.hasPointerLock =   'pointerLockElement' in document        ||
-                                'mozPointerLockElement' in document     ||
-                                'webkitPointerLockElement' in document;
-
-        if (this.hasPointerLock) {
-            this.domElement.requestPointerLock =    this.domElement.requestPointerLock      ||
-                                                    this.domElement.mozRequestPointerLock   ||
-                                                    this.domElement.webkitRequestPointerLock;
-            this.domElement.requestPointerLock();
-        }
-    };
-
 	var _onMouseMove            = bind(this, this.onMouseMove),
 	    _onMouseDown            = bind(this, this.onMouseDown),
         _onMouseUp              = bind(this, this.onMouseUp),
@@ -301,7 +193,115 @@ FirstPersonControls = function (camera, domElement) {
 			fn.apply(scope, arguments);
 		};
 	}
-	this.handleResize();
 };
 
 FirstPersonControls.prototype.constructor = FirstPersonControls;
+
+/*
+ * Updates the camera's position relative to changes in the mouse location. Should be called
+ * every frame with the frame delta passed as an argument.
+ */
+FirstPersonControls.prototype.update = function(delta) {
+    if (!this.enabled) {
+        return;
+    }
+
+    if (this.heightSpeed) {
+        var y = THREE.Math.clamp(this.object.position.y, this.heightMin, this.heightMax);
+        var heightDelta = y - this.heightMin;
+
+        this.autoSpeedFactor = delta * (heightDelta * this.heightCoef);
+    } else {
+        this.autoSpeedFactor = 0.0;
+    }
+
+    var actualMoveSpeed = delta * this.movementSpeed;
+
+    if (this.moveForward || (this.autoForward && !this.moveBackward)) this.object.translateZ(-(actualMoveSpeed + this.autoSpeedFactor));
+    if (this.moveBackward) this.object.translateZ(actualMoveSpeed);
+
+    if (this.moveLeft) this.object.translateX(-actualMoveSpeed);
+    if (this.moveRight) this.object.translateX(actualMoveSpeed);
+
+    if (this.moveUp) this.object.translateY(actualMoveSpeed);
+    if (this.moveDown) this.object.translateY(-actualMoveSpeed);
+
+    var actualLookSpeed = delta * this.lookSpeed;
+
+    if (!this.activeLook) {
+        actualLookSpeed = 0;
+    }
+
+    var verticalLookRatio = 1;
+
+    if (this.constrainVertical) {
+        verticalLookRatio = Math.PI / (this.verticalMax - this.verticalMin);
+    }
+
+    this.lon += this.mouseX * actualLookSpeed;
+    if (this.lookVertical) this.lat -= this.mouseY * actualLookSpeed * verticalLookRatio;
+
+    this.lat = Math.max(-85, Math.min(85, this.lat));
+    this.phi = THREE.Math.degToRad(90 - this.lat);
+
+    this.theta = THREE.Math.degToRad(this.lon);
+
+    if (this.constrainVertical) {
+        this.phi = THREE.Math.mapLinear(this.phi, 0, Math.PI, this.verticalMin, this.verticalMax);
+    }
+
+    var targetPosition = this.target,
+        position = this.object.position;
+
+    targetPosition.x = position.x + 100 * Math.sin(this.phi) * Math.cos(this.theta);
+    targetPosition.y = position.y + 100 * Math.cos(this.phi);
+    targetPosition.z = position.z + 100 * Math.sin(this.phi) * Math.sin(this.theta);
+
+    this.object.lookAt(targetPosition);
+
+    if (this.hasPointerLock) {
+        this.mouseX = 0;
+        this.mouseY = 0;
+    }
+};
+
+/*
+ * Checks if the current browser is capable of pointer lock and makes a request to the browser
+ * to acquire the lock. Updates internal pointer lock state.
+ */
+FirstPersonControls.prototype.updatePointerLock = function() {
+    this.hasPointerLock =   'pointerLockElement' in document    ||
+                            'mozPointerLockElement' in document ||
+                            'webkitPointerLockElement' in document;
+
+    if (this.hasPointerLock) {
+        this.domElement.requestPointerLock =    this.domElement.requestPointerLock      ||
+                                                this.domElement.mozRequestPointerLock   ||
+                                                this.domElement.webkitRequestPointerLock;
+        this.domElement.requestPointerLock();
+    }
+};
+
+/*
+ * Removes all event listeners associated with the controls.
+ */
+FirstPersonControls.prototype.dispose = function() {
+    this.domElement.removeEventListener('contextmenu', contextmenu, false);
+    this.domElement.removeEventListener('mousedown', _onMouseDown, false);
+    this.domElement.removeEventListener('mousemove', _onMouseMove, false);
+    this.domElement.removeEventListener('mouseup', _onMouseUp, false);
+
+    if (this.hasPointerLock) {
+        // Ask the browser to release the pointer
+        document.exitPointerLock = document.exitPointerLock || document.mozExitPointerLock ||
+            document.webkitExitPointerLock;
+        document.exitPointerLock();
+
+        document.removeEventListener('pointerlockchange', _onPointerLockChange, false);
+        document.removeEventListener('mozpointerlockchange', _onPointerLockChange, false);
+        document.removeEventListener('webkitpointerlockchange', _onPointerLockChange, false);
+    }
+
+    window.removeEventListener('keydown', _onKeyDown, false);
+    window.removeEventListener('keyup', _onKeyUp, false);
+};
