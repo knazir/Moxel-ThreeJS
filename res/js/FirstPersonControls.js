@@ -6,10 +6,17 @@
  * modified by knazir / https://www.github.com/knazir/
  */
 FirstPersonControls = function (camera, domElement) {
-	this.object             = camera;
+	this.camera             = camera;
 	this.target             = new THREE.Vector3(0, 0, 0);
 	this.domElement         = (domElement !== undefined) ? domElement : document;
 	this.enabled            = true;
+
+    // this.geometry           = new THREE.BoxBufferGeometry(CONFIG.PLAYER_WIDTH, CONFIG.PLAYER_HEIGHT,
+    //                                                       CONFIG.PLAYER_WIDTH);
+    // this.player             = new THREE.Mesh(this.geometry);
+    // this.gravity            = CONFIG.PLAYER_GRAVITY;
+    // this.mass               = CONFIG.PLAYER_MASS;
+    // this.colliding          = false;
 
 	this.movementSpeed      = CONFIG.CAMERA_MOVE_SPEED;
 	this.lookSpeed          = CONFIG.CAMERA_LOOK_SPEED;
@@ -40,6 +47,7 @@ FirstPersonControls = function (camera, domElement) {
 	this.moveBackward       = false;
 	this.moveLeft           = false;
 	this.moveRight          = false;
+    this.sprinting          = false;
 
 	if (this.domElement !== document) {
 		this.domElement.setAttribute('tabindex', - 1);
@@ -99,8 +107,11 @@ FirstPersonControls = function (camera, domElement) {
 			case 39: /*right*/
 			case 68: /*D*/ this.moveRight = true; break;
 
+            case 32: /*space*/
 			case 82: /*R*/ this.moveUp = true; break;
 			case 70: /*F*/ this.moveDown = true; break;
+
+            case 16: /*shift*/ this.sprinting = true; this.movementSpeed *= CONFIG.CAMERA_SPRINT_MODIFIER; break;
 		}
 	};
 
@@ -118,8 +129,11 @@ FirstPersonControls = function (camera, domElement) {
 			case 39: /*right*/
 			case 68: /*D*/ this.moveRight = false; break;
 
+            case 32: /*space*/
 			case 82: /*R*/ this.moveUp = false; break;
 			case 70: /*F*/ this.moveDown = false; break;
+
+            case 16: /*shift*/ this.sprinting = false; this.movementSpeed /= CONFIG.CAMERA_SPRINT_MODIFIER; break;
 		}
 	};
 
@@ -133,6 +147,7 @@ FirstPersonControls = function (camera, domElement) {
                                 document.mozPointerLockElement === this.domElement  ||
                                 document.webkitPointerLockElement === this.domElement;
 
+        // TODO: Make overlay update independent of controls
         var overlay = document.querySelector(CONFIG.OVERLAY_ID);
         if (this.hasPointerLock) {
             overlay.style.display = 'none';
@@ -178,6 +193,23 @@ FirstPersonControls = function (camera, domElement) {
 			fn.apply(scope, arguments);
 		};
 	}
+
+	this.checkCollisions = function() {
+        for (var vertexIndex = 0; vertexIndex < this.player.geometry.vertices.length; vertexIndex++) {
+            var localVertex         = this.player.geometry.vertices[vertexIndex].clone(),
+                globalVertex        = this.player.matrix.multiplyVector3(localVertex),
+                directionVector     = globalVertex.subSelf(this.player.position),
+                ray                 = new THREE.Ray(this.player.position, directionVector.clone().normalize()),
+                collisionResults    = ray.intersectObjects(collidableMeshList);
+
+            if (collisionResults.length > 0 && collisionResults[0].distance < directionVector.length()) {
+                console.log('Collided.');
+            }
+        }
+    };
+
+	// setup player object with camera
+    // this.player.add(this.camera);
 };
 
 FirstPersonControls.prototype.constructor = FirstPersonControls;
@@ -192,7 +224,7 @@ FirstPersonControls.prototype.update = function(delta) {
     }
 
     if (this.heightSpeed) {
-        var y = THREE.Math.clamp(this.object.position.y, this.heightMin, this.heightMax);
+        var y = THREE.Math.clamp(this.camera.position.y, this.heightMin, this.heightMax);
         var heightDelta = y - this.heightMin;
 
         this.autoSpeedFactor = delta * (heightDelta * this.heightCoef);
@@ -202,14 +234,14 @@ FirstPersonControls.prototype.update = function(delta) {
 
     var actualMoveSpeed = delta * this.movementSpeed;
 
-    if (this.moveForward || (this.autoForward && !this.moveBackward)) this.object.translateZ(-(actualMoveSpeed + this.autoSpeedFactor));
-    if (this.moveBackward) this.object.translateZ(actualMoveSpeed);
+    if (this.moveForward || (this.autoForward && !this.moveBackward)) this.camera.translateZ(-(actualMoveSpeed + this.autoSpeedFactor));
+    if (this.moveBackward) this.camera.translateZ(actualMoveSpeed);
 
-    if (this.moveLeft) this.object.translateX(-actualMoveSpeed);
-    if (this.moveRight) this.object.translateX(actualMoveSpeed);
+    if (this.moveLeft) this.camera.translateX(-actualMoveSpeed);
+    if (this.moveRight) this.camera.translateX(actualMoveSpeed);
 
-    if (this.moveUp) this.object.translateY(actualMoveSpeed);
-    if (this.moveDown) this.object.translateY(-actualMoveSpeed);
+    if (this.moveUp) this.camera.translateY(actualMoveSpeed);
+    if (this.moveDown) this.camera.translateY(-actualMoveSpeed);
 
     var actualLookSpeed = delta * this.lookSpeed;
 
@@ -226,23 +258,24 @@ FirstPersonControls.prototype.update = function(delta) {
     this.lon += this.mouseX * actualLookSpeed;
     if (this.lookVertical) this.lat -= this.mouseY * actualLookSpeed * verticalLookRatio;
 
-    this.lat = Math.max(-85, Math.min(85, this.lat));
-    this.phi = THREE.Math.degToRad(90 - this.lat);
-
-    this.theta = THREE.Math.degToRad(this.lon);
+    this.lat    = Math.max(-85, Math.min(85, this.lat));
+    this.phi    = THREE.Math.degToRad(90 - this.lat);
+    this.theta  = THREE.Math.degToRad(this.lon);
 
     if (this.constrainVertical) {
         this.phi = THREE.Math.mapLinear(this.phi, 0, Math.PI, this.verticalMin, this.verticalMax);
     }
 
-    var targetPosition = this.target,
-        position = this.object.position;
+    var targetPosition  = this.target,
+        position        = this.camera.position;
 
     targetPosition.x = position.x + 100 * Math.sin(this.phi) * Math.cos(this.theta);
     targetPosition.y = position.y + 100 * Math.cos(this.phi);
     targetPosition.z = position.z + 100 * Math.sin(this.phi) * Math.sin(this.theta);
 
-    this.object.lookAt(targetPosition);
+    this.camera.lookAt(targetPosition);
+
+    //this.checkCollisions();
 
     if (this.hasPointerLock) {
         this.mouseX = 0;
@@ -255,14 +288,14 @@ FirstPersonControls.prototype.update = function(delta) {
  * to acquire the lock. Updates internal pointer lock state.
  */
 FirstPersonControls.prototype.updatePointerLock = function() {
-    this.hasPointerLock =   'pointerLockElement' in document    ||
-                            'mozPointerLockElement' in document ||
-                            'webkitPointerLockElement' in document;
+    this.hasPointerLock = 'pointerLockElement' in document    ||
+                          'mozPointerLockElement' in document ||
+                          'webkitPointerLockElement' in document;
 
     if (this.hasPointerLock) {
-        this.domElement.requestPointerLock =    this.domElement.requestPointerLock      ||
-                                                this.domElement.mozRequestPointerLock   ||
-                                                this.domElement.webkitRequestPointerLock;
+        this.domElement.requestPointerLock = this.domElement.requestPointerLock      ||
+                                             this.domElement.mozRequestPointerLock   ||
+                                             this.domElement.webkitRequestPointerLock;
         this.domElement.requestPointerLock();
     }
 };
@@ -289,4 +322,11 @@ FirstPersonControls.prototype.dispose = function() {
 
     window.removeEventListener('keydown', _onKeyDown, false);
     window.removeEventListener('keyup', _onKeyUp, false);
+};
+
+/*
+ * Return the 3D player object these controls and camera are attached to.
+ */
+FirstPersonControls.prototype.getPlayer = function() {
+    return this.player;
 };

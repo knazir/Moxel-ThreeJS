@@ -18,6 +18,7 @@ function BlockFactory() {
         var material    = this.createCubeMaterial(type),
             cube        = new THREE.Mesh(this.geometry, material);
         cube.position.set(x, y, z);
+        cube.castShadow = CONFIG.SHADOWS_ENABLED;
         return cube;
     };
 }

@@ -4,6 +4,12 @@ CONFIG = {
     BLOCK_TEXTURE_DIR:      'res/textures/blocks/',
     NEIGHBORS_TO_CULL:      27,
     OVERLAY_ID:             '#overlay',
+    SHADOWS_ENABLED:        true,
+
+    PLAYER_HEIGHT:          20,
+    PLAYER_WIDTH:           10,
+    PLAYER_GRAVITY:         9.8,
+    PLAYER_MASS:            100,
 
     CHUNK_WIDTH:            20,
     CHUNK_HEIGHT:           20,
@@ -24,6 +30,7 @@ CONFIG = {
     CAMERA_INITIAL_Y:       20,
     CAMERA_INITIAL_Z:       220,
     CAMERA_MOVE_SPEED:      100.0,
+    CAMERA_SPRINT_MODIFIER: 2.0,
     CAMERA_LOOK_SPEED:      10.0,
     CAMERA_CONSTRAIN_LOOK:  true,
 

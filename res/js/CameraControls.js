@@ -14,3 +14,7 @@ CameraControls.prototype.update = function() {
 CameraControls.prototype.toggleCameraPointerLock = function() {
     this.controls.updatePointerLock();
 };
+
+CameraControls.prototype.getPlayer = function() {
+    return this.controls.getPlayer();
+};

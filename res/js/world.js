@@ -1,8 +1,8 @@
 function createWorld() {
 
-    /* * * * * * * * * * * *
-     * Component Functions *
-     * * * * * * * * * * * */
+    /* * * * * * * * * * *
+     * Component Methods *
+     * * * * * * * * * * */
     var createClock = function() {
         return new THREE.Clock();
     };
@@ -119,6 +119,10 @@ function createWorld() {
         renderSample();
     };
 
+    /*
+     * Disables scolling using the arrow and space keys.
+     * TODO: Only add this method when engine dom element is in focus
+     */
     var disableKeyScrolling = function(keyEvent) {
         switch (keyEvent.keyCode) {
             case 37:
@@ -145,7 +149,7 @@ function createWorld() {
         }
     };
 
-    var toggleOverlay = function(event) {
+    var toggleOverlay = function() {
         controls.toggleCameraPointerLock();
     };
 
